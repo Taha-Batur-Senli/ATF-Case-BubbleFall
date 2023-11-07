@@ -10,6 +10,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public Material[] matsToGive;
 
     [SerializeField] public int amountToCreate;
+    [SerializeField] public int cullChance;
     [SerializeField] public int ballWidth = 7;
     [SerializeField] public int ballHeight = 7;
 
@@ -17,8 +18,8 @@ public class gameManager : MonoBehaviour
 
     [SerializeField] public float widthHigh;
     [SerializeField] public float widthLow;
-    // [SerializeField] public float heightHigh;
     [SerializeField] public float heightLow;
+    // [SerializeField] public float heightHigh;
 
 
     // Start is called before the first frame update
@@ -26,6 +27,8 @@ public class gameManager : MonoBehaviour
     {
         GameObject[] arr = new GameObject[amountToCreate];
         GameObject created = Instantiate(hitBallTemplate);
+        int chance;
+
         created.transform.position = new Vector3(widthLow, distanceToFloor, heightLow);
         arr[0] = created;
 
@@ -46,6 +49,13 @@ public class gameManager : MonoBehaviour
                 arr[a] = createdNew;
             }
             arr[a].GetComponent<MeshRenderer>().material = matsToGive[UnityEngine.Random.Range(0, matsToGive.Length)];
+
+            chance = UnityEngine.Random.Range(0, 10);
+
+            if(chance < cullChance)
+            {
+                arr[a].SetActive(false);
+            }
         }
     }
 

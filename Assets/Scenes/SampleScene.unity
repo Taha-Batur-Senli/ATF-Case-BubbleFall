@@ -455,8 +455,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 536f685833b27c2479ed456d2d5cf2a4, type: 2}
   - {fileID: 2100000, guid: 717a028eb271a384a8e6a0cd12da64e5, type: 2}
   amountToCreate: 120
-  ballWidth: 8
-  ballHeight: 8
+  cullChance: 5
+  ballWidth: 7
+  ballHeight: 7
   widthHigh: 24
   widthLow: -20
   heightLow: 380

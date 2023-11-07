@@ -22,12 +22,7 @@ public class throwScript : MonoBehaviour
     {
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        line.SetActive(false);
     }
 
     private void OnMouseUp()
@@ -35,18 +30,23 @@ public class throwScript : MonoBehaviour
         Ray ray = mainCam.ScreenPointToRay( Input.mousePosition );
         if(Physics.Raycast(ray, out RaycastHit raycasthit ) && !isShot)
         {
-            line.SetActive(true);
-            Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
-            line.GetComponent<lineScript>().endPos = targetPosition;
-            StartCoroutine(LerpPosition(targetPosition, 1));
-            isShot = true;
+
+            if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)")
+            {
+                line.SetActive(true);
+                Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
+                line.GetComponent<lineScript>().endPos = targetPosition;
+                StartCoroutine(LerpPosition(targetPosition, 1));
+                isShot = true;
+            }
+
         }
     }
 
     IEnumerator LerpPosition(Vector3 targetPosition, float duration)
     {
         float time = 0;
-        line.SetActive(true);   
+
         while (time < duration && !sentinel)
         {
             transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
@@ -56,9 +56,22 @@ public class throwScript : MonoBehaviour
         if(!sentinel)
         {
             transform.position = targetPosition;
+            goUntilHit(targetPosition);
         }
         createThrow(startPosition);
         line.SetActive(false);
+    }
+
+    private void goUntilHit(Vector3 endDir)
+    {
+        Vector3 direction = (endDir - startPosition).normalized;
+        if (Physics.SphereCast(startPosition, manager.ballWidth, direction, out RaycastHit hit))
+        {
+            if(hit.collider.name == "SphereCollider")
+            {
+                Debug.Log("ss");
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -67,6 +80,10 @@ public class throwScript : MonoBehaviour
         {
             sentinel = true;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+            if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
+            {
+                Debug.Log("ss");
+            }
         }
     }
     public void createThrow(Vector3 startPos)
