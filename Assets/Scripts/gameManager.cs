@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,19 +6,47 @@ using UnityEngine;
 public class gameManager : MonoBehaviour
 {
     [SerializeField] GameObject thrownBall;
-    [SerializeField] private GameObject line;
+    [SerializeField] GameObject hitBallTemplate;
+    [SerializeField] public Material[] matsToGive;
+
+    [SerializeField] public int amountToCreate;
+    [SerializeField] public int ballWidth = 7;
+    [SerializeField] public int ballHeight = 7;
+
+    public const float distanceToFloor = -196.67f;
+
+    [SerializeField] public float widthHigh;
+    [SerializeField] public float widthLow;
+    // [SerializeField] public float heightHigh;
+    [SerializeField] public float heightLow;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
+        GameObject[] arr = new GameObject[amountToCreate];
+        GameObject created = Instantiate(hitBallTemplate);
+        created.transform.position = new Vector3(widthLow, distanceToFloor, heightLow);
+        arr[0] = created;
 
-    public void createThrow(Vector3 startPos)
-    {
-        GameObject newOne = Instantiate(thrownBall);
-        newOne.transform.position = startPos;
-        line.GetComponent<lineScript>().startPos = newOne.transform;
+        arr[0].GetComponent<MeshRenderer>().material = matsToGive[UnityEngine.Random.Range(0, matsToGive.Length)];
+
+        for (int a = 1; a < amountToCreate; a++)
+        {
+            if(arr[a - 1].transform.position.x + ballWidth >= widthHigh)
+            {
+                GameObject createdShift = Instantiate(hitBallTemplate);
+                createdShift.transform.position = new Vector3(arr[0].transform.position.x, arr[0].transform.position.y, arr[a - 1].transform.position.z + ballHeight);
+                arr[a] = createdShift;
+            }
+            else
+            {
+                GameObject createdNew = Instantiate(hitBallTemplate);
+                createdNew.transform.position = new Vector3(arr[a - 1].transform.position.x + ballWidth, arr[a - 1].transform.position.y, arr[a - 1].transform.position.z);
+                arr[a] = createdNew;
+            }
+            arr[a].GetComponent<MeshRenderer>().material = matsToGive[UnityEngine.Random.Range(0, matsToGive.Length)];
+        }
     }
 
     // Update is called once per frame

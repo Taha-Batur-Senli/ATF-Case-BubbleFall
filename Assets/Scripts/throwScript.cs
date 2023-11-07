@@ -9,7 +9,6 @@ using UnityEngine;
 public class throwScript : MonoBehaviour
 {
     [SerializeField] private Camera mainCam;
-    [SerializeField] private Material[] matsToPick;
     [SerializeField] private GameObject line;
     [SerializeField] private gameManager manager;
 
@@ -21,7 +20,7 @@ public class throwScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<MeshRenderer>().material = matsToPick[UnityEngine.Random.Range(0,matsToPick.Length)];
+        GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
     }
 
@@ -58,7 +57,7 @@ public class throwScript : MonoBehaviour
         {
             transform.position = targetPosition;
         }
-        manager.createThrow(startPosition);
+        createThrow(startPosition);
         line.SetActive(false);
     }
 
@@ -70,5 +69,10 @@ public class throwScript : MonoBehaviour
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
         }
     }
-
+    public void createThrow(Vector3 startPos)
+    {
+        GameObject newOne = Instantiate(gameObject);
+        newOne.transform.position = startPos;
+        line.GetComponent<lineScript>().startPos = newOne.transform;
+    }
 }
