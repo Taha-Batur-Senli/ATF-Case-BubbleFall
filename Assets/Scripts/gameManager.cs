@@ -14,7 +14,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int ballWidth = 7;
     [SerializeField] public int ballHeight = 7;
 
-    public const float distanceToFloor = -196.67f;
+    [SerializeField] public float distanceToFloor = -196.67f;
 
     [SerializeField] public float widthHigh;
     [SerializeField] public float widthLow;

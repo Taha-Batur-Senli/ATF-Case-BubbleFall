@@ -454,13 +454,14 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6e579cdf2becfcb458bf72f263490530, type: 2}
   - {fileID: 2100000, guid: 536f685833b27c2479ed456d2d5cf2a4, type: 2}
   - {fileID: 2100000, guid: 717a028eb271a384a8e6a0cd12da64e5, type: 2}
-  amountToCreate: 120
-  cullChance: 5
+  amountToCreate: 180
+  cullChance: 3
   ballWidth: 7
   ballHeight: 7
+  distanceToFloor: -196.67
   widthHigh: 24
   widthLow: -20
-  heightLow: 380
+  heightLow: 360
 --- !u!1 &1190048059
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,8 +30,7 @@ public class throwScript : MonoBehaviour
         Ray ray = mainCam.ScreenPointToRay( Input.mousePosition );
         if(Physics.Raycast(ray, out RaycastHit raycasthit ) && !isShot)
         {
-
-            if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)")
+            if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.x != startPosition.x && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
             {
                 line.SetActive(true);
                 Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
@@ -39,7 +38,6 @@ public class throwScript : MonoBehaviour
                 StartCoroutine(LerpPosition(targetPosition, 1));
                 isShot = true;
             }
-
         }
     }
 
@@ -86,6 +84,7 @@ public class throwScript : MonoBehaviour
             }
         }
     }
+
     public void createThrow(Vector3 startPos)
     {
         GameObject newOne = Instantiate(gameObject);
