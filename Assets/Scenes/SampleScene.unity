@@ -590,6 +590,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 963194229}
+  ballIDY: 0
+  ballIDX: 0
+  checkedForRemoval: 0
+  materialIndex: -1
 --- !u!1 &1589643912
 GameObject:
   m_ObjectHideFlags: 0
