@@ -454,12 +454,12 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 6e579cdf2becfcb458bf72f263490530, type: 2}
   - {fileID: 2100000, guid: 536f685833b27c2479ed456d2d5cf2a4, type: 2}
   - {fileID: 2100000, guid: 717a028eb271a384a8e6a0cd12da64e5, type: 2}
-  amountToCreate: 180
+  amountOnEachRow: 0400000005000000060000000600000003000000040000000500000002000000
   cullChance: 3
   ballWidth: 7
   ballHeight: 7
   distanceToFloor: -196.67
-  widthHigh: 24
+  maxNumberOfBallsInRow: 7
   widthLow: -20
   heightLow: 360
 --- !u!1 &1190048059
@@ -475,6 +475,7 @@ GameObject:
   - component: {fileID: 1190048062}
   - component: {fileID: 1190048061}
   - component: {fileID: 1190048060}
+  - component: {fileID: 1190048065}
   m_Layer: 0
   m_Name: HitSphere
   m_TagString: Untagged
@@ -576,6 +577,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1190048065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190048059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cff67665653d03d42ab593a5e36bc4e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manager: {fileID: 963194229}
 --- !u!1 &1589643912
 GameObject:
   m_ObjectHideFlags: 0

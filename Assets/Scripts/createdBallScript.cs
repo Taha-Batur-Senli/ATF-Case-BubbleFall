@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class createdBallScript : MonoBehaviour
 {
+    [SerializeField] gameManager manager;
+    public int ballIDY;
+    public int ballIDX;
+    public bool checkedForRemoval = false;
+    public int materialIndex = -1;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,32 +20,5 @@ public class createdBallScript : MonoBehaviour
     void Update()
     {
         
-    }
-
-    public void callHit()
-    {
-        if (Physics.Raycast(gameObject.transform.position, Vector3.forward, out RaycastHit raycasthitF))
-        {
-            if (raycasthitF.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(gameObject.GetComponent<MeshRenderer>().material.name))
-            {
-                Debug.Log("ss");
-            }
-        }
-
-        if (Physics.Raycast(gameObject.transform.position, Vector3.left, out RaycastHit raycasthitL))
-        {
-            if (raycasthitL.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(gameObject.GetComponent<MeshRenderer>().material.name))
-            {
-                Debug.Log("ss2");
-            }
-        }
-
-        if (Physics.Raycast(gameObject.transform.position, Vector3.right, out RaycastHit raycasthitR))
-        {
-            if (raycasthitR.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(gameObject.GetComponent<MeshRenderer>().material.name))
-            {
-                Debug.Log("ss3");
-            }
-        }
     }
 }

@@ -13,9 +13,11 @@ public class throwScript : MonoBehaviour
     [SerializeField] private gameManager manager;
 
     private Vector3 startPosition;
+    private GameObject collidedWith;
 
     bool sentinel = false;
     bool isShot = false;
+    bool collided = false;
 
     // Start is called before the first frame update
     void Start()
@@ -54,7 +56,7 @@ public class throwScript : MonoBehaviour
         if(!sentinel)
         {
             transform.position = targetPosition;
-            goUntilHit(targetPosition);
+            //goUntilHit(targetPosition);
         }
         createThrow(startPosition);
         line.SetActive(false);
@@ -78,10 +80,12 @@ public class throwScript : MonoBehaviour
         {
             sentinel = true;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-            if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
+            if (!collided && collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
             {
-                Debug.Log("ss");
+                collidedWith = collision.gameObject;
+                manager.callHit(collision.gameObject, gameObject);
             }
+            collided = true;
         }
     }
 
