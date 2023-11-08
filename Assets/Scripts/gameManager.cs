@@ -9,6 +9,7 @@ public class gameManager : MonoBehaviour
 {
     [SerializeField] GameObject thrownBall;
     [SerializeField] GameObject hitBallTemplate;
+    [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
 
     //[SerializeField] public int amountToCreate;
@@ -24,7 +25,7 @@ public class gameManager : MonoBehaviour
 
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
-    //[SerializeField] public float widthHigh;
+    // [SerializeField] public float widthHigh;
     // [SerializeField] public float heightHigh;
 
     // Start is called before the first frame update
@@ -130,6 +131,8 @@ public class gameManager : MonoBehaviour
                 {
                     item.SetActive(false);
                 }
+                line.SetActive(false);
+                createThrow(thrownBall.GetComponent<throwScript>().startPosition);
             }
 
             /*
@@ -166,5 +169,11 @@ public class gameManager : MonoBehaviour
         
 
         return count;
+    }
+    public void createThrow(Vector3 startPos)
+    {
+        GameObject newOne = Instantiate(thrownBall);
+        newOne.transform.position = startPos;
+        line.GetComponent<lineScript>().startPos = newOne.transform;
     }
 }

@@ -9,10 +9,9 @@ using UnityEngine;
 public class throwScript : MonoBehaviour
 {
     [SerializeField] private Camera mainCam;
-    [SerializeField] private GameObject line;
     [SerializeField] private gameManager manager;
+    public Vector3 startPosition;
 
-    private Vector3 startPosition;
     private GameObject collidedWith;
 
     bool sentinel = false;
@@ -24,7 +23,7 @@ public class throwScript : MonoBehaviour
     {
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
-        line.SetActive(false);
+        manager.line.SetActive(false);
     }
 
     private void OnMouseUp()
@@ -34,9 +33,9 @@ public class throwScript : MonoBehaviour
         {
             if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.x != startPosition.x && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
             {
-                line.SetActive(true);
+                manager.line.SetActive(true);
                 Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
-                line.GetComponent<lineScript>().endPos = targetPosition;
+                manager.line.GetComponent<lineScript>().endPos = targetPosition;
                 StartCoroutine(LerpPosition(targetPosition, 1));
                 isShot = true;
             }
@@ -53,13 +52,8 @@ public class throwScript : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
-        if(!sentinel)
-        {
-            transform.position = targetPosition;
-            //goUntilHit(targetPosition);
-        }
-        createThrow(startPosition);
-        line.SetActive(false);
+        manager.createThrow(startPosition);
+        manager.line.SetActive(false);
     }
 
     private void goUntilHit(Vector3 endDir)
@@ -93,6 +87,6 @@ public class throwScript : MonoBehaviour
     {
         GameObject newOne = Instantiate(gameObject);
         newOne.transform.position = startPos;
-        line.GetComponent<lineScript>().startPos = newOne.transform;
+        manager.line.GetComponent<lineScript>().startPos = newOne.transform;
     }
 }
