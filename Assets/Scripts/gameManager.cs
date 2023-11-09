@@ -78,6 +78,8 @@ public class gameManager : MonoBehaviour
     public int callHit(GameObject target, GameObject hitter, int prior = 0)
     {
         //debug.Log("hit called");
+        //THERE IS A BUG HERE WHICH CAUSES PRIORLY COLLUDED OBJECT TO BE DELETED ALONGSIDE THE NEW ONE REGARDLESS OF COLOR,
+        //PRIOR COLLIDED OBJECT IS A PREGEN, AND THE OTHER TWO THAT HIT EACH OTHER ARE IN AN UNRELATED POSITION BUT HAVE SAME COLOR, FIX!!
 
         if(target.GetComponent<throwScript>() != null)
         {
