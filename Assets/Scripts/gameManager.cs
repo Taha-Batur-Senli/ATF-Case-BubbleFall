@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
 public class gameManager : MonoBehaviour
@@ -11,6 +12,11 @@ public class gameManager : MonoBehaviour
     [SerializeField] GameObject hitBallTemplate;
     [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
+    [SerializeField] public GameObject gameOver;
+
+    public float backMostRowZ;
+
+    [SerializeField] public int endGameOnZ;
 
     //[SerializeField] public int amountToCreate;
     [SerializeField] public int[] amountOnEachRow;
@@ -22,6 +28,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int maxNumberOfBallsInRow = 7;
 
     private List<List<GameObject>> createdBalls = new List<List<GameObject>>();
+    public bool throwReady = true;
 
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
@@ -40,7 +47,7 @@ public class gameManager : MonoBehaviour
 
             if (amountOnEachRow[count] > maxNumberOfBallsInRow || amountOnEachRow[count] < 0)
             {
-                Debug.Log("Incorrect Number!");
+                //debug.Log("Incorrect Number!");
                 amountOnEachRow[count] = maxNumberOfBallsInRow;
             }
            
@@ -58,6 +65,8 @@ public class gameManager : MonoBehaviour
 
             count++;
         }
+
+        backMostRowZ = heightLow + (ballHeight * count);
     }
 
     // Update is called once per frame
@@ -66,100 +75,177 @@ public class gameManager : MonoBehaviour
         
     }
 
-    public void callHit(GameObject target, GameObject hitter)
+    public int callHit(GameObject target, GameObject hitter, int prior = 0)
     {
-        Debug.Log("hit called");
+        //debug.Log("hit called");
 
         if(target.GetComponent<throwScript>() != null)
         {
-            Debug.Log("hit a previously thrown ball");
+            //debug.Log("hit a previously thrown ball");
+            if(target.GetComponent<throwScript>().collidedWith != null)
+            {
+                if(target.GetComponent<throwScript>().collidedWith.GetComponent<createdBallScript>() == null)
+                {
+
+                    Debug.Log("in A");
+                    target.GetComponent<throwScript>().collidedWith.SetActive(false);
+                    target.SetActive(false);
+                    hitter.SetActive(false);
+                    if(!throwReady)
+                    {
+                        Debug.Log("generating");
+                        throwReady= true;
+                        createThrow(thrownBall.GetComponent<throwScript>().startPosition);
+                    }
+                    return 0;
+                }
+                else
+                {
+                    Debug.Log("in B");
+                    target.GetComponent<throwScript>().collisionCount++;
+
+                    if (!throwReady)
+                    {
+                        Debug.Log("generating2");
+                        throwReady = true;
+                        createThrow(thrownBall.GetComponent<throwScript>().startPosition);
+                    }
+
+                    if (target.GetComponent<throwScript>().collisionCount >= 3)
+                    {
+                        hitter.gameObject.SetActive(false);
+                        callHit(target.GetComponent<throwScript>().collidedWith, target, 1);
+                    }
+                    else
+                    {
+                        target.GetComponent<throwScript>().collisionCount--;
+                    }
+
+                    return target.GetComponent<throwScript>().collisionCount;
+                }
+            }
+            else
+            {
+                //This one's previous value was 2 and it worked fine
+                return 2;
+            }
         }
         else
         {
-            Debug.Log("hit a generated ball");
+            Debug.Log("in c");
+            //debug.Log("hit a generated ball");
             List<GameObject> savedPositions = new List<GameObject>();
             savedPositions.Add(target);
             savedPositions.Add(hitter);
-            int count = 2;
+            int count = 2 + prior;
             target.GetComponent<createdBallScript>().checkedForRemoval = true;
             int targetX = target.GetComponent<createdBallScript>().ballIDX;
             int targetY = target.GetComponent<createdBallScript>().ballIDY;
+            bool topInc = false, botInc = false, leftInc = false, rightInc = false;
 
             int indexOfTarget = target.GetComponent<createdBallScript>().materialIndex;
 
             //Check Right
             if (createdBalls[targetY].Count - 1 >= targetX + 1 && indexOfTarget == createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().materialIndex)
             {
-                Debug.Log("Right included");
+                //debug.Log("Right included");
                 savedPositions.Add(createdBalls[targetY][targetX + 1]);
                 createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
                 count++;
+                rightInc = true;
             }
 
             //Check Left
             if (0 <= targetX - 1 && indexOfTarget == createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().materialIndex)
             {
-                Debug.Log("Left included");
+                //debug.Log("Left included");
                 savedPositions.Add(createdBalls[targetY][targetX - 1]);
                 createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
                 count++;
+                leftInc = true;
             }
 
-            Debug.Log(createdBalls.Count);
+            //debug.Log(createdBalls.Count);
             //Check Top
             if (createdBalls.Count - 1 >= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX && indexOfTarget == createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().materialIndex)
             {
-                Debug.Log("Top included");
+                //debug.Log("Top included");
                 savedPositions.Add(createdBalls[targetY + 1][targetX]);
                 createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
                 count++;
+                topInc= true;
             }
 
-            Debug.Log(targetY - 1);
             //Check Down
             if (0 <= targetY - 1 && createdBalls[targetY - 1].Count - 1 >= targetX && indexOfTarget == createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().materialIndex)
             {
-                Debug.Log("Down included");
+                //debug.Log("Down included");
                 savedPositions.Add(createdBalls[targetY - 1][targetX]);
                 createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
                 count++;
+                botInc = true;
             }
 
-            if(count >= 3)
+            //Check Down Left
+            if ((botInc || leftInc) && 0 <= targetY - 1 && 0 <= targetX - 1 && indexOfTarget == createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+            {
+                savedPositions.Add(createdBalls[targetY - 1][targetX - 1]);
+                createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+
+            //Check Down Right
+            if ((botInc || rightInc) && 0 <= targetY - 1 && createdBalls[targetY - 1].Count - 1 >= targetX + 1 && indexOfTarget == createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+            {
+                savedPositions.Add(createdBalls[targetY - 1][targetX + 1]);
+                createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+                
+            //Check Top Left
+            if ((topInc || leftInc) && 0 <= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX - 1 && indexOfTarget == createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+            {
+                savedPositions.Add(createdBalls[targetY + 1][targetX - 1]);
+                createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+
+            //Check Top Right
+            if ((topInc || rightInc) && 0 <= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && indexOfTarget == createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+            {
+                savedPositions.Add(createdBalls[targetY + 1][targetX + 1]);
+                createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+
+            if (count >= 3)
             {
                 foreach (var item in savedPositions)
                 {
                     item.SetActive(false);
                 }
                 line.SetActive(false);
+                count = 0;
+            }
+            else
+            {
+                foreach (var item in savedPositions)
+                {
+                    if(item.GetComponent<createdBallScript>() != null)
+                    {
+                        item.GetComponent<createdBallScript>().checkedForRemoval = false;
+                    }
+                }
+            }
+
+            if (!throwReady)
+            {
+                Debug.Log("generating3");
+                throwReady = true;
                 createThrow(thrownBall.GetComponent<throwScript>().startPosition);
             }
 
-            /*
-            //Check Corners
-            if ()
-            {
-
-                count++;
-            }
-
-            if ()
-            {
-
-                count++;
-            }
-
-            if ()
-            {
-
-                count++;
-            }
-
-            if ()
-            {
-
-                count++;
-            }*/
+            return count;
         }
 
     }
@@ -175,5 +261,12 @@ public class gameManager : MonoBehaviour
         GameObject newOne = Instantiate(thrownBall);
         newOne.transform.position = startPos;
         line.GetComponent<lineScript>().startPos = newOne.transform;
+        newOne.SetActive(true);
+        throwReady = true;
+    }
+
+    public void restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

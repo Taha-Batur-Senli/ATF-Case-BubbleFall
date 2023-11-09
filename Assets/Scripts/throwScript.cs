@@ -12,7 +12,8 @@ public class throwScript : MonoBehaviour
     [SerializeField] private gameManager manager;
     public Vector3 startPosition;
 
-    private GameObject collidedWith;
+    public GameObject collidedWith;
+    public int collisionCount;
 
     bool sentinel = false;
     bool isShot = false;
@@ -28,6 +29,7 @@ public class throwScript : MonoBehaviour
 
     private void OnMouseUp()
     {
+        manager.throwReady = false;
         Ray ray = mainCam.ScreenPointToRay( Input.mousePosition );
         if(Physics.Raycast(ray, out RaycastHit raycasthit ) && !isShot)
         {
@@ -44,27 +46,27 @@ public class throwScript : MonoBehaviour
 
     IEnumerator LerpPosition(Vector3 targetPosition, float duration)
     {
+        //targetPosition.x = targetPosition.x * manager.backMostRowZ;
+        //targetPosition.z = manager.backMostRowZ;
         float time = 0;
 
         while (time < duration && !sentinel)
         {
             transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
+            //Vector3 pos = targetPosition - startPosition;
+            //transform.position += pos * Time.deltaTime;
             time += Time.deltaTime;
             yield return null;
         }
-        manager.createThrow(startPosition);
-        manager.line.SetActive(false);
-    }
-
-    private void goUntilHit(Vector3 endDir)
-    {
-        Vector3 direction = (endDir - startPosition).normalized;
-        if (Physics.SphereCast(startPosition, manager.ballWidth, direction, out RaycastHit hit))
+        if(!manager.throwReady)
         {
-            if(hit.collider.name == "SphereCollider")
-            {
-                Debug.Log("ss");
-            }
+            manager.createThrow(startPosition);
+        }
+        manager.line.SetActive(false);
+        
+        if(transform.position.z < manager.endGameOnZ)
+        {
+            manager.gameOver.SetActive(true);
         }
     }
 
@@ -77,16 +79,9 @@ public class throwScript : MonoBehaviour
             if (!collided && collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
             {
                 collidedWith = collision.gameObject;
-                manager.callHit(collision.gameObject, gameObject);
+                collisionCount = manager.callHit(collision.gameObject, gameObject);
             }
             collided = true;
         }
-    }
-
-    public void createThrow(Vector3 startPos)
-    {
-        GameObject newOne = Instantiate(gameObject);
-        newOne.transform.position = startPos;
-        manager.line.GetComponent<lineScript>().startPos = newOne.transform;
     }
 }
