@@ -5,6 +5,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class throwScript : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class throwScript : MonoBehaviour
     bool sentinel = false;
     bool isShot = false;
     bool collided = false;
+    public bool dragDown = false;
 
     // Start is called before the first frame update
     void Start()
@@ -28,19 +30,33 @@ public class throwScript : MonoBehaviour
         manager.line.SetActive(false);
     }
 
+    private void Update()
+    {
+        if (dragDown)
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.mass = 10;
+            rb.freezeRotation = false;
+            rb.constraints = ~RigidbodyConstraints.FreezePositionZ;
+        }
+    }
+
     private void OnMouseUp()
     {
-        manager.throwReady = false;
-        Ray ray = mainCam.ScreenPointToRay( Input.mousePosition );
-        if(Physics.Raycast(ray, out RaycastHit raycasthit ) && !isShot)
+        if(manager.canShoot)
         {
-            if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.x != startPosition.x && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
+            manager.throwReady = false;
+            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit raycasthit) && !isShot)
             {
-                manager.line.SetActive(true);
-                Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
-                manager.line.GetComponent<lineScript>().endPos = targetPosition;
-                StartCoroutine(LerpPosition(targetPosition, 1));
-                isShot = true;
+                if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.x != startPosition.x && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
+                {
+                    manager.line.SetActive(true);
+                    Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
+                    manager.line.GetComponent<lineScript>().endPos = targetPosition;
+                    StartCoroutine(LerpPosition(targetPosition, 1));
+                    isShot = true;
+                }
             }
         }
     }
@@ -77,9 +93,19 @@ public class throwScript : MonoBehaviour
             {
                 collidedWith = collision.gameObject;
                 collisionCount = manager.callHit(collision.gameObject, gameObject);
-                Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
             }
             collided = true;
+        }
+
+        if(collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
+        {
+            dragDown = true;
+        }
+
+        if (collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
+        {
+            dragDown = true;
         }
     }
 }
