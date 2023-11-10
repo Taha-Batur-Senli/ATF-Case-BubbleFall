@@ -75,16 +75,19 @@ public class gameManager : MonoBehaviour
         
     }
 
-    public int callHit(GameObject target, GameObject hitter, int prior = 0)
+    public int callHit(GameObject target, GameObject hitter, int prior = 0, bool addhitter = true)
     {
         //debug.Log("hit called");
         //THERE IS A BUG HERE WHICH CAUSES PRIORLY COLLUDED OBJECT TO BE DELETED ALONGSIDE THE NEW ONE REGARDLESS OF COLOR,
         //PRIOR COLLIDED OBJECT IS A PREGEN, AND THE OTHER TWO THAT HIT EACH OTHER ARE IN AN UNRELATED POSITION BUT HAVE SAME COLOR, FIX!!
+        Debug.Log("START");
 
-        if(target.GetComponent<throwScript>() != null)
+        if (target.GetComponent<throwScript>() != null)
         {
+            target.GetComponent<throwScript>().collisionCount = 2;
+
             //debug.Log("hit a previously thrown ball");
-            if(target.GetComponent<throwScript>().collidedWith != null)
+            if (target.GetComponent<throwScript>().collidedWith != null)
             {
                 if(target.GetComponent<throwScript>().collidedWith.GetComponent<createdBallScript>() == null)
                 {
@@ -103,8 +106,8 @@ public class gameManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("in B");
                     target.GetComponent<throwScript>().collisionCount++;
+                    Debug.Log("in B");
 
                     if (!throwReady)
                     {
@@ -113,34 +116,40 @@ public class gameManager : MonoBehaviour
                         createThrow(thrownBall.GetComponent<throwScript>().startPosition);
                     }
 
+
                     if (target.GetComponent<throwScript>().collisionCount >= 3)
                     {
+                        Debug.Log("ss");
                         hitter.gameObject.SetActive(false);
                         callHit(target.GetComponent<throwScript>().collidedWith, target, 1);
                     }
                     else
                     {
+                        Debug.Log("ss2");
                         target.GetComponent<throwScript>().collisionCount--;
                     }
 
-                    return target.GetComponent<throwScript>().collisionCount;
                 }
             }
-            else
-            {
-                //This one's previous value was 2 and it worked fine
-                return 2;
-            }
+
+            return target.GetComponent<throwScript>().collisionCount;
         }
         else
         {
             Debug.Log("in c");
-            //debug.Log("hit a generated ball");
+            Debug.Log("hit a generated ball");
             List<GameObject> savedPositions = new List<GameObject>();
-            savedPositions.Add(target);
-            savedPositions.Add(hitter);
+            if(!target.GetComponent<createdBallScript>().checkedForRemoval)
+            {
+                savedPositions.Add(target);
+                target.GetComponent<createdBallScript>().checkedForRemoval = true;
+            }
+            if(addhitter)
+            {
+                savedPositions.Add(hitter);
+            }
+
             int count = 2 + prior;
-            target.GetComponent<createdBallScript>().checkedForRemoval = true;
             int targetX = target.GetComponent<createdBallScript>().ballIDX;
             int targetY = target.GetComponent<createdBallScript>().ballIDY;
             bool topInc = false, botInc = false, leftInc = false, rightInc = false;
@@ -148,83 +157,119 @@ public class gameManager : MonoBehaviour
             int indexOfTarget = target.GetComponent<createdBallScript>().materialIndex;
 
             //Check Right
-            if (createdBalls[targetY].Count - 1 >= targetX + 1 && indexOfTarget == createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+            if (createdBalls[targetY].Count - 1 >= targetX + 1 && createdBalls[targetY][targetX + 1].activeSelf && indexOfTarget == createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().materialIndex)
             {
-                //debug.Log("Right included");
-                savedPositions.Add(createdBalls[targetY][targetX + 1]);
-                createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if(!createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    //debug.Log("Right included");
+                    savedPositions.Add(createdBalls[targetY][targetX + 1]);
+                    createdBalls[targetY][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
                 rightInc = true;
             }
 
             //Check Left
-            if (0 <= targetX - 1 && indexOfTarget == createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+            if (0 <= targetX - 1 && createdBalls[targetY][targetX - 1].activeSelf && indexOfTarget == createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().materialIndex)
             {
-                //debug.Log("Left included");
-                savedPositions.Add(createdBalls[targetY][targetX - 1]);
-                createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if(!createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    //debug.Log("Left included");
+                    savedPositions.Add(createdBalls[targetY][targetX - 1]);
+                    createdBalls[targetY][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
                 leftInc = true;
             }
 
             //debug.Log(createdBalls.Count);
             //Check Top
-            if (createdBalls.Count - 1 >= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX && indexOfTarget == createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().materialIndex)
+            if (createdBalls.Count - 1 >= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX && createdBalls[targetY + 1][targetX].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().materialIndex)
             {
-                //debug.Log("Top included");
-                savedPositions.Add(createdBalls[targetY + 1][targetX]);
-                createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
-                topInc= true;
+                if (!createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    //debug.Log("Top included");
+                    savedPositions.Add(createdBalls[targetY + 1][targetX]);
+                    createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
+                topInc = true;
             }
 
             //Check Down
-            if (0 <= targetY - 1 && createdBalls[targetY - 1].Count - 1 >= targetX && indexOfTarget == createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().materialIndex)
+            if (0 <= targetY - 1 && createdBalls[targetY - 1].Count - 1 >= targetX && createdBalls[targetY - 1][targetX].activeSelf && indexOfTarget == createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().materialIndex)
             {
-                //debug.Log("Down included");
-                savedPositions.Add(createdBalls[targetY - 1][targetX]);
-                createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if (!createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    //debug.Log("Down included");
+                    savedPositions.Add(createdBalls[targetY - 1][targetX]);
+                    createdBalls[targetY - 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
                 botInc = true;
             }
 
             //Check Down Left
-            if ((botInc || leftInc) && 0 <= targetY - 1 && 0 <= targetX - 1 && indexOfTarget == createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+            if ((botInc || leftInc) && 0 <= targetY - 1 && 0 <= targetX - 1 && createdBalls[targetY - 1][targetX - 1].activeSelf && indexOfTarget == createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
             {
-                savedPositions.Add(createdBalls[targetY - 1][targetX - 1]);
-                createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if (!createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    savedPositions.Add(createdBalls[targetY - 1][targetX - 1]);
+                    createdBalls[targetY - 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
             }
 
             //Check Down Right
-            if ((botInc || rightInc) && 0 <= targetY - 1 && createdBalls[targetY - 1].Count - 1 >= targetX + 1 && indexOfTarget == createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+            if ((botInc || rightInc) && 0 <= targetY - 1 && createdBalls[targetY - 1].Count - 1 >= targetX + 1 && createdBalls[targetY - 1][targetX + 1].activeSelf && indexOfTarget == createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
             {
-                savedPositions.Add(createdBalls[targetY - 1][targetX + 1]);
-                createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if (!createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    savedPositions.Add(createdBalls[targetY - 1][targetX + 1]);
+                    createdBalls[targetY - 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
             }
                 
             //Check Top Left
-            if ((topInc || leftInc) && 0 <= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX - 1 && indexOfTarget == createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+            if ((topInc || leftInc) && 0 <= targetY + 1 && 0 <= targetX - 1 && createdBalls[targetY + 1][targetX - 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
             {
-                savedPositions.Add(createdBalls[targetY + 1][targetX - 1]);
-                createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if (!createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    savedPositions.Add(createdBalls[targetY + 1][targetX - 1]);
+                    createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
             }
 
             //Check Top Right
-            if ((topInc || rightInc) && 0 <= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && indexOfTarget == createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+            if ((topInc || rightInc) && 0 <= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && createdBalls[targetY + 1][targetX + 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
             {
-                savedPositions.Add(createdBalls[targetY + 1][targetX + 1]);
-                createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
-                count++;
+                if (!createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval)
+                {
+                    savedPositions.Add(createdBalls[targetY + 1][targetX + 1]);
+                    createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                    count++;
+                }
             }
 
             if (count >= 3)
             {
                 foreach (var item in savedPositions)
                 {
-                    item.SetActive(false);
+                    if(item.GetComponent<createdBallScript>() != null)
+                    {
+                        if(item.GetComponent<createdBallScript>().checkedForRemoval)
+                        {
+                            item.SetActive(false);
+                        }
+
+                        callHit(item, null, 1, false);
+                    }
+                    else
+                    {
+                        item.SetActive(false);
+                    }
                 }
                 line.SetActive(false);
                 count = 0;

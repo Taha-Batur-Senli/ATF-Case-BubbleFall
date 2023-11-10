@@ -22,6 +22,7 @@ public class throwScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        collidedWith = null;
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
         manager.line.SetActive(false);
@@ -46,15 +47,11 @@ public class throwScript : MonoBehaviour
 
     IEnumerator LerpPosition(Vector3 targetPosition, float duration)
     {
-        //targetPosition.x = targetPosition.x * manager.backMostRowZ;
-        //targetPosition.z = manager.backMostRowZ;
         float time = 0;
 
         while (time < duration && !sentinel)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
-            //Vector3 pos = targetPosition - startPosition;
-            //transform.position += pos * Time.deltaTime;
+            transform.position = Vector3.Lerp(startPosition, targetPosition, time *2 / duration);
             time += Time.deltaTime;
             yield return null;
         }
@@ -72,14 +69,15 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetType() == typeof(SphereCollider))
+        if (collision.collider.GetType() == typeof(SphereCollider) && !collided)
         {
             sentinel = true;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-            if (!collided && collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
+            if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
             {
                 collidedWith = collision.gameObject;
                 collisionCount = manager.callHit(collision.gameObject, gameObject);
+                Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
             }
             collided = true;
         }
