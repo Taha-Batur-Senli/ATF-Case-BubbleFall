@@ -18,11 +18,11 @@ public class checkUI : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            gameManager.canShoot = true;
+            //gameManager.canShoot = true;
         }
         else
         {
-            gameManager.canShoot = false;
+            //gameManager.canShoot = false;
         }
     }
 

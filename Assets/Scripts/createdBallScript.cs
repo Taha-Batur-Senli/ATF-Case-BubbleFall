@@ -14,7 +14,7 @@ public class createdBallScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
     }
 
     // Update is called once per frame
@@ -40,6 +40,26 @@ public class createdBallScript : MonoBehaviour
         if (collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
+        }
+
+        if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown)
+        {
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
+
+            int toWhere = UnityEngine.Random.Range(0, 4);
+
+            Vector3 targetPos;
+
+            if (toWhere < 2)
+            {
+                targetPos = transform.position + new Vector3(7, 0, 0);
+            }
+            else
+            {
+                targetPos = transform.position - new Vector3(7, 0, 0);
+            }
+
+            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
         }
     }
 }

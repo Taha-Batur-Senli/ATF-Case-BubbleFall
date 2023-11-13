@@ -13,7 +13,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
-    public bool canShoot = false;
+    //public bool canShoot = false;
 
     public float backMostRowZ;
 
@@ -39,6 +39,7 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameOver.SetActive(false);
         int matOfBall;
         int count = 0;
 
@@ -230,7 +231,7 @@ public class gameManager : MonoBehaviour
             }
                 
             //Check Top Left
-            if ((topInc || leftInc) && 0 <= targetY + 1 && 0 <= targetX - 1 && createdBalls[targetY + 1][targetX - 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+            if ((topInc || leftInc) && createdBalls.Count - 1 >= targetY + 1 && 0 <= targetX - 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && createdBalls[targetY + 1][targetX - 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
             {
                 if (!createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval)
                 {
@@ -241,7 +242,7 @@ public class gameManager : MonoBehaviour
             }
 
             //Check Top Right
-            if ((topInc || rightInc) && 0 <= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && createdBalls[targetY + 1][targetX + 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+            if ((topInc || rightInc) && createdBalls.Count - 1 >= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && createdBalls[targetY + 1][targetX + 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
             {
                 if (!createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval)
                 {

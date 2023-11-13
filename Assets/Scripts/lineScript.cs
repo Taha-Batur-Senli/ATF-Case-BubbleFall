@@ -6,6 +6,7 @@ using UnityEngine;
 public class lineScript : MonoBehaviour
 {
     [SerializeField] public Transform startPos;
+    public bool getShot = false;
 
     private LineRenderer rend;
     public Vector3 endPos;
@@ -20,7 +21,7 @@ public class lineScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (getShot)
         {
             rend.SetPosition(0, startPos.position);
             rend.SetPosition(1, endPos);
