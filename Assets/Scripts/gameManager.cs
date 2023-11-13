@@ -13,6 +13,8 @@ public class gameManager : MonoBehaviour
     [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
+    [SerializeField] public int zLim;
+    [SerializeField] public string throwName = "ThrownSphere";
     //public bool canShoot = false;
 
     public float backMostRowZ;
@@ -261,6 +263,7 @@ public class gameManager : MonoBehaviour
                         if(item.GetComponent<createdBallScript>().checkedForRemoval)
                         {
                             item.GetComponent<createdBallScript>().dragDown = true;
+                            markDown(item.GetComponent<createdBallScript>().ballIDY, item.GetComponent<createdBallScript>().ballIDX);
                         }
 
                         callHit(item, null, 1, false);
@@ -283,7 +286,8 @@ public class gameManager : MonoBehaviour
                 {
                     for (int b = 0; b < createdBalls[i].Count; b++)
                     {
-                        checkAround(createdBalls[i][b]);
+                        //checkAround(createdBalls[i][b], i, b);
+
                     }
                 }
 
@@ -316,13 +320,52 @@ public class gameManager : MonoBehaviour
     {
         GameObject newOne = Instantiate(thrownBall);
         newOne.transform.position = startPos;
+        newOne.GetComponent<throwScript>().collisionCount = 0;
         line.GetComponent<lineScript>().startPos = newOne.transform;
         newOne.SetActive(true);
         throwReady = true;
     }
 
-    public void checkAround(GameObject ball)
+    /*
+    public void checkAround(GameObject ball, int targetY, int targetX)
     {
+        //Check Top
+        if (createdBalls.Count - 1 >= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX && createdBalls[targetY + 1][targetX].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().materialIndex)
+        {
+            if (!createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().checkedForRemoval)
+            {
+                ////Debug.Log("Top included");
+                savedPositions.Add(createdBalls[targetY + 1][targetX]);
+                createdBalls[targetY + 1][targetX].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+            topInc = true;
+        }
+
+        //Check Top Left
+        if ((topInc || leftInc) && createdBalls.Count - 1 >= targetY + 1 && 0 <= targetX - 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && createdBalls[targetY + 1][targetX - 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().materialIndex)
+        {
+            if (!createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval)
+            {
+                savedPositions.Add(createdBalls[targetY + 1][targetX - 1]);
+                createdBalls[targetY + 1][targetX - 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+        }
+
+        //Check Top Right
+        if ((topInc || rightInc) && createdBalls.Count - 1 >= targetY + 1 && createdBalls[targetY + 1].Count - 1 >= targetX + 1 && createdBalls[targetY + 1][targetX + 1].activeSelf && indexOfTarget == createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().materialIndex)
+        {
+            if (!createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval)
+            {
+                savedPositions.Add(createdBalls[targetY + 1][targetX + 1]);
+                createdBalls[targetY + 1][targetX + 1].GetComponent<createdBallScript>().checkedForRemoval = true;
+                count++;
+            }
+        }
+
+    }*/
+
         /*
          * 
     public int checkAround(int count, int indexOfTarget)
@@ -370,6 +413,16 @@ public class gameManager : MonoBehaviour
         return count;
     }
          */
+
+    public void markDown(int iLocY, int iLocX)
+    {
+        for(int x = iLocY; x > 0; x--)
+        {
+            if(0 <= x - 1 && createdBalls[x - 1].Count - 1 >= iLocX && createdBalls[x - 1][iLocX].activeSelf)
+            {
+                createdBalls[x - 1][iLocX].GetComponent<createdBallScript>().dragDown = true;
+            }
+        }
     }
 
     public void restart()

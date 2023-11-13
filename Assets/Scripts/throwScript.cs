@@ -12,13 +12,15 @@ public class throwScript : MonoBehaviour
     [SerializeField] private Camera mainCam;
     [SerializeField] private gameManager manager;
     public Vector3 startPosition;
+    GameObject collisionRegardlessOf;
 
     public GameObject collidedWith;
-    public int collisionCount;
+    public int collisionCount = 0;
 
     bool sentinel = false;
     bool isShot = false;
     bool collided = false;
+    bool doOnce = false;
     public bool dragDown = false;
 
     // Start is called before the first frame update
@@ -41,6 +43,16 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
+        if (collisionRegardlessOf != null && collisionRegardlessOf.GetComponent<throwScript>() != null && collisionRegardlessOf.GetComponent<throwScript>().dragDown == true)
+        {
+            dragDown = true;
+        }
+
+        if (collisionRegardlessOf != null && collisionRegardlessOf.GetComponent<createdBallScript>() != null && collisionRegardlessOf.GetComponent<createdBallScript>().dragDown == true)
+        {
+            dragDown = true;
+        }
+
         if (dragDown && isShot)
         {
             Rigidbody rb = GetComponent<Rigidbody>();
@@ -63,6 +75,18 @@ public class throwScript : MonoBehaviour
         {
             Shoot();
         }
+
+        if(transform.position.z < manager.zLim && name != manager.throwName)
+        {
+            gameObject.SetActive(false);
+        }
+        /*
+        Destroy(gameObject);
+        if(transform.position.z < manager.zLim && name == manager.throwName)
+        {
+            transform.position = new Vector3(startPosition.x, startPosition.y - 50, startPosition.z);
+            dragDown = false;
+        }*/
     }
 
     private void Shoot()
@@ -127,31 +151,39 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetType() == typeof(SphereCollider) && !collided && isShot)
+
+        if (collision.collider.GetType() == typeof(SphereCollider))
         {
-            sentinel = true;
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-            if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
+            collisionRegardlessOf = collision.gameObject;
+
+            if(!collided && isShot)
             {
-                collidedWith = collision.gameObject;
-                collisionCount = manager.callHit(collision.gameObject, gameObject);
-                //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                sentinel = true;
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+                if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
+                {
+                    collidedWith = collision.gameObject;
+                    collisionCount = manager.callHit(collision.gameObject, gameObject);
+                    //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                }
+                collided = true;
             }
-            collided = true;
         }
 
-        if(collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
+        if (collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
         {
             dragDown = true;
         }
-
+        
         if (collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
         }
 
-        if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown && isShot)
+        if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown && isShot && !doOnce)
         {
+            doOnce = true;
+
             gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
 
             int toWhere = UnityEngine.Random.Range(0, 4);
@@ -160,11 +192,11 @@ public class throwScript : MonoBehaviour
 
             if (toWhere < 2)
             {
-                targetPos = transform.position + new Vector3(7, 0, 0);
+                targetPos = transform.position + new Vector3(12, 0, 0);
             }
             else
             {
-                targetPos = transform.position - new Vector3(7, 0, 0);
+                targetPos = transform.position - new Vector3(12, 0, 0);
             }
 
             transform.position = Vector3.Lerp(transform.position, targetPos, 3);
