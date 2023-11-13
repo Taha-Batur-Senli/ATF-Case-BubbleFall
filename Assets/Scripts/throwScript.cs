@@ -14,6 +14,7 @@ public class throwScript : MonoBehaviour
     public Vector3 startPosition;
 
     public GameObject collidedWith;
+    public GameObject collidedWithRegardless;
     public int collisionCount;
 
     bool sentinel = false;
@@ -41,6 +42,16 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
+        if (transform.position.z < manager.zLim)
+        {
+            dragDown = false;
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
+            rb.mass = 1;
+            rb.freezeRotation = true;
+            rb.useGravity = false;
+        }
+
         if (dragDown && isShot)
         {
             Rigidbody rb = GetComponent<Rigidbody>();
@@ -127,17 +138,34 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetType() == typeof(SphereCollider) && !collided && isShot)
+        if (collision.collider.GetType() == typeof(SphereCollider))
         {
-            sentinel = true;
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-            if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
+            collidedWithRegardless = collision.gameObject;
+
+            if (collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
             {
-                collidedWith = collision.gameObject;
-                collisionCount = manager.callHit(collision.gameObject, gameObject);
-                //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                dragDown = true;
             }
-            collided = true;
+
+            if (collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
+            {
+                dragDown = true;
+            }
+
+            if(!collided && isShot)
+            {
+                sentinel = true;
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+
+                if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
+                {
+                    collidedWith = collision.gameObject;
+                    collisionCount = manager.callHit(collision.gameObject, gameObject);
+                    //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                }
+                collided = true;
+            }
+
         }
 
         if(collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
@@ -160,11 +188,11 @@ public class throwScript : MonoBehaviour
 
             if (toWhere < 2)
             {
-                targetPos = transform.position + new Vector3(7, 0, 0);
+                targetPos = transform.position + new Vector3(15, 0, 0);
             }
             else
             {
-                targetPos = transform.position - new Vector3(7, 0, 0);
+                targetPos = transform.position - new Vector3(15, 0, 0);
             }
 
             transform.position = Vector3.Lerp(transform.position, targetPos, 3);

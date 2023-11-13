@@ -14,6 +14,8 @@ public class gameManager : MonoBehaviour
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
     //public bool canShoot = false;
+    [SerializeField] public int zLim;
+    [SerializeField] public string throwName = "ThrownSphere";
 
     public float backMostRowZ;
 
@@ -261,6 +263,7 @@ public class gameManager : MonoBehaviour
                         if(item.GetComponent<createdBallScript>().checkedForRemoval)
                         {
                             item.GetComponent<createdBallScript>().dragDown = true;
+                            goDown(item, item.GetComponent<createdBallScript>().ballIDY, item.GetComponent<createdBallScript>().ballIDX);
                         }
 
                         callHit(item, null, 1, false);
@@ -309,6 +312,17 @@ public class gameManager : MonoBehaviour
             }
 
             return count;
+        }
+    }
+
+    public void goDown(GameObject item, int yCoord, int xCoord)
+    {
+        for(int coordY = 0; coordY < yCoord; coordY++)
+        {
+            if (createdBalls[coordY].Count - 1 >= xCoord)
+            {
+                createdBalls[coordY][xCoord].GetComponent<createdBallScript>().dragDown = true;
+            }
         }
     }
 

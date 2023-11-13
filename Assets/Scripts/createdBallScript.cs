@@ -20,6 +20,16 @@ public class createdBallScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(transform.position.z < manager.zLim)
+        {
+            dragDown = false;
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
+            rb.mass = 1;
+            rb.freezeRotation = true;
+            rb.useGravity = false;
+        }
+
         if(dragDown)
         {
             Rigidbody rb = GetComponent<Rigidbody>();
