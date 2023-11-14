@@ -81,7 +81,7 @@ public class createdBallScript : MonoBehaviour
 
         if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown)
         {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 0.2f;
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
 
             int toWhere = UnityEngine.Random.Range(0, 4);
 

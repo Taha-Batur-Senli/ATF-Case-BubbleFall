@@ -43,7 +43,7 @@ public class throwScript : MonoBehaviour
         rb.mass = 1;
         rb.freezeRotation = true;*/
         rb.useGravity = false;
-        gameObject.GetComponent<SphereCollider>().material.bounciness = 0.2f;
+        gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
     }
 
     private void Update()
@@ -153,8 +153,7 @@ public class throwScript : MonoBehaviour
     public void ShootBall(Vector3 direction)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.velocity = direction.normalized * manager.speed * speedTerm;
-
+        rb.velocity = direction.normalized * 150;
     }
 
     IEnumerator LerpPosition(Vector3 targetPosition, float duration)
@@ -263,7 +262,7 @@ public class throwScript : MonoBehaviour
 
         if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown && isShot)
         {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 0.2f;
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
 
             int toWhere = UnityEngine.Random.Range(0, 4);
 
