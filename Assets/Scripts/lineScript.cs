@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class lineScript : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class lineScript : MonoBehaviour
             rend.SetPosition(1, endPos);
             rend.startWidth = 0.5f;
             rend.endWidth = 0.5f;
+            gameObject.SetActive(true);
         }
     }
-
 }

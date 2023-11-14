@@ -13,10 +13,12 @@ public class gameManager : MonoBehaviour
     [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
+    [SerializeField] public GameObject ignoreWhenFalling;
     //public bool canShoot = false;
     [SerializeField] public int zLim;
     [SerializeField] public string throwName = "ThrownSphere";
 
+    [SerializeField] public GameObject preventor;
     public float backMostRowZ;
 
     [SerializeField] public int endGameOnZ;
@@ -33,6 +35,7 @@ public class gameManager : MonoBehaviour
     private List<List<GameObject>> createdBalls = new List<List<GameObject>>();
     public bool throwReady = true;
 
+    public float speed = 500000f; // Adjust the speed as needed
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
     // [SerializeField] public float widthHigh;
@@ -76,7 +79,12 @@ public class gameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!throwReady)
+        {
+            //Debug.Log("generating");
+            throwReady = true;
+            createThrow(thrownBall.GetComponent<throwScript>().startPosition);
+        }
     }
 
     public int callHit(GameObject target, GameObject hitter, int prior = 0, bool addhitter = true)
@@ -97,26 +105,13 @@ public class gameManager : MonoBehaviour
                     target.GetComponent<throwScript>().collidedWith.GetComponent<throwScript>().dragDown= true;
                     target.GetComponent<throwScript>().dragDown = true;
                     hitter.GetComponent<throwScript>().dragDown = true;
-                    if (!throwReady)
-                    {
-                        //Debug.Log("generating");
-                        throwReady= true;
-                        createThrow(thrownBall.GetComponent<throwScript>().startPosition);
-                    }
+                    
                     return 0;
                 }
                 else
                 {
                     target.GetComponent<throwScript>().collisionCount++;
-                    //Debug.Log("in B");
-
-                    if (!throwReady)
-                    {
-                        //Debug.Log("generating2");
-                        throwReady = true;
-                        createThrow(thrownBall.GetComponent<throwScript>().startPosition);
-                    }
-
+                    //Debug.Log("in B
 
                     if (target.GetComponent<throwScript>().collisionCount >= 3)
                     {
@@ -302,13 +297,6 @@ public class gameManager : MonoBehaviour
                         item.GetComponent<createdBallScript>().checkedForRemoval = false;
                     }
                 }
-            }
-
-            if (!throwReady)
-            {
-                //Debug.Log("generating3");
-                throwReady = true;
-                createThrow(thrownBall.GetComponent<throwScript>().startPosition);
             }
 
             return count;

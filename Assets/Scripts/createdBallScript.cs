@@ -42,6 +42,33 @@ public class createdBallScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if(collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
+        {
+            Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
+        }
+
+        /*if (collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().isShot)
+        {
+            Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), GetComponent<Collider>());
+        }*/
+
+        if (collision.gameObject.Equals(manager.preventor) && dragDown)
+        {
+            Vector3 targetPos;
+
+            if (transform.position.x > 0)
+            {
+                targetPos = transform.position + new Vector3(8, 0, 0);
+            }
+            else
+            {
+                targetPos = transform.position - new Vector3(8, 0, 0);
+            }
+
+            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
+        }
+
+
         if (collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
         {
             dragDown = true;
@@ -54,7 +81,7 @@ public class createdBallScript : MonoBehaviour
 
         if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown)
         {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 0.2f;
 
             int toWhere = UnityEngine.Random.Range(0, 4);
 

@@ -18,30 +18,51 @@ public class throwScript : MonoBehaviour
     public int collisionCount;
 
     bool sentinel = false;
-    bool isShot = false;
+    bool fellOnce = false;
+    public bool isShot = false;
     bool collided = false;
     public bool dragDown = false;
+    private int speedTerm = 30;
 
     // Start is called before the first frame update
     void Start()
     {
         collidedWith = null;
+        collidedWithRegardless = null;
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
         manager.line.SetActive(false);
+        Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>());
+        Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>(), false);
+        isShot = false;
 
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezePositionZ;
         rb.constraints = RigidbodyConstraints.FreezePositionY;
+        /* rb.constraints = RigidbodyConstraints.FreezePositionZ;
         rb.constraints = RigidbodyConstraints.FreezePositionX;
         rb.mass = 1;
-        rb.freezeRotation = true;
+        rb.freezeRotation = true;*/
         rb.useGravity = false;
-        gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
+        gameObject.GetComponent<SphereCollider>().material.bounciness = 0.2f;
     }
 
     private void Update()
     {
+        if (collidedWithRegardless != null && collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
+        {
+            dragDown = true;
+        }
+
+        if (collidedWithRegardless != null && collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
+        {
+            dragDown = true;
+        }
+
+        if (collided && transform.position.z < manager.endGameOnZ && !fellOnce)
+        {
+            manager.gameOver.SetActive(true);
+        }
+
         if (transform.position.z < manager.zLim)
         {
             dragDown = false;
@@ -54,6 +75,8 @@ public class throwScript : MonoBehaviour
 
         if (dragDown && isShot)
         {
+            Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
+            fellOnce = true;
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 10;
             rb.freezeRotation = false;
@@ -62,17 +85,42 @@ public class throwScript : MonoBehaviour
         }
         else
         {
-            dragDown = false;
-            Rigidbody rb = GetComponent<Rigidbody>();
-            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
-            rb.mass = 1;
-            rb.freezeRotation = true;
-            rb.useGravity = false;
+            if (collided)
+            {
+                dragDown = false;
+                Rigidbody rb = GetComponent<Rigidbody>();
+                rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
+                rb.mass = 1;
+                rb.freezeRotation = true;
+                rb.useGravity = false;
+            }
         }
 
-        if (Input.GetMouseButtonDown(0) && !manager.gameOver.gameObject.activeSelf)
+        if(Input.GetMouseButton(0) && !manager.gameOver.gameObject.activeSelf)
         {
+            getLoc();
+            manager.line.GetComponent<lineScript>().getShot = true;
+            manager.line.SetActive(true);
+        }
+
+        if (Input.GetMouseButtonUp(0) && !manager.gameOver.gameObject.activeSelf)
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.mass = 1;
+            rb.freezeRotation = false;
+            rb.constraints = RigidbodyConstraints.FreezePositionY;
             Shoot();
+        }
+    }
+
+    public void getLoc()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit raycasthit))
+        {
+            Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
+            manager.line.GetComponent<lineScript>().endPos = targetPosition;
+            Debug.Log(manager.line.GetComponent<lineScript>().endPos);
         }
     }
 
@@ -81,17 +129,32 @@ public class throwScript : MonoBehaviour
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit raycasthit) && !isShot)
         {
-            if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.x != startPosition.x && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
-            {
-                manager.throwReady = false;
-                isShot = true;
-                Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
-                manager.line.GetComponent<lineScript>().endPos = targetPosition;
-                manager.line.SetActive(true);
-                manager.line.GetComponent<lineScript>().getShot = true;
-                StartCoroutine(LerpPosition(targetPosition, 1));
-            }
+            // Get the direction from this object to the point where the ray hit
+            Vector3 direction = raycasthit.point - transform.position;
+
+            // Normalize the direction vector to get a unit vector
+            direction.Normalize();
+            isShot = true;
+            Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
+            manager.line.GetComponent<lineScript>().endPos = targetPosition;
+            manager.line.SetActive(false);
+            ShootBall(direction);
+            /*
+             * 
+           if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
+           {
+
+               StartCoroutine(LerpPosition(targetPosition, 1));
+           }
+             */
         }
+    }
+
+    public void ShootBall(Vector3 direction)
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.velocity = direction.normalized * manager.speed * speedTerm;
+
     }
 
     IEnumerator LerpPosition(Vector3 targetPosition, float duration)
@@ -138,49 +201,73 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
+        {
+            Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
+        }
+
+        if (collision.gameObject.Equals(manager.preventor) && dragDown)
+        {
+            Vector3 targetPos;
+
+            if (transform.position.x > 0 )
+            {
+                targetPos = transform.position + new Vector3(8, 0, 0);
+            }
+            else
+            {
+                targetPos = transform.position - new Vector3(8, 0, 0);
+            }
+
+            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
+        }
+
         if (collision.collider.GetType() == typeof(SphereCollider))
         {
             collidedWithRegardless = collision.gameObject;
+            manager.throwReady = false;
 
-            if (collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
+            /*if(collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().isShot)
             {
-                dragDown = true;
+                Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), GetComponent<Collider>());
             }
-
-            if (collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
-            {
-                dragDown = true;
-            }
-
-            if(!collided && isShot)
-            {
-                sentinel = true;
-                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-
-                if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name) )
+            else
+            {/*/
+            if (!collided && isShot)
                 {
-                    collidedWith = collision.gameObject;
-                    collisionCount = manager.callHit(collision.gameObject, gameObject);
-                    //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                    sentinel = true;
+                    GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+
+                    if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
+                    {
+                        collidedWith = collision.gameObject;
+                        collisionCount = manager.callHit(collision.gameObject, gameObject);
+                        //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
+                    }
+                    else
+                    {
+                        manager.createThrow(startPosition);
+                    }
+
+                    collided = true;
                 }
-                collided = true;
-            }
+            //}
 
         }
 
-        if(collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
+        if(isShot && collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
         {
             dragDown = true;
         }
 
-        if (collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
+        if (isShot && collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
         }
 
         if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown && isShot)
         {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 0.2f;
 
             int toWhere = UnityEngine.Random.Range(0, 4);
 
