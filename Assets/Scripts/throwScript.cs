@@ -225,7 +225,6 @@ public class throwScript : MonoBehaviour
         if (collision.collider.GetType() == typeof(SphereCollider))
         {
             collidedWithRegardless = collision.gameObject;
-            manager.throwReady = false;
 
             /*if(collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().isShot)
             {
@@ -244,11 +243,8 @@ public class throwScript : MonoBehaviour
                         collisionCount = manager.callHit(collision.gameObject, gameObject);
                         //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
                     }
-                    else
-                    {
-                        manager.createThrow(startPosition);
-                    }
 
+                    manager.throwReady = false;
                     collided = true;
                 }
             //}
