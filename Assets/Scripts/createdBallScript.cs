@@ -26,9 +26,8 @@ public class createdBallScript : MonoBehaviour
         {
             dragDown = true;
         }
-        else if(hasOneUp && manager.createdBalls[ballIDY][ballIDX].GetComponent<createdBallScript>().dragDown)
+        else if(hasOneUp && manager.createdBalls[ballIDY + 1][ballIDX].GetComponent<createdBallScript>().dragDown)
         {
-            Debug.Log("ss");
             dragDown = true;
         }
 
