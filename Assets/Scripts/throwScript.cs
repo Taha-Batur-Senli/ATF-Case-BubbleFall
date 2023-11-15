@@ -17,12 +17,11 @@ public class throwScript : MonoBehaviour
     public GameObject collidedWithRegardless;
     public int collisionCount;
 
-    bool sentinel = false;
     bool fellOnce = false;
     public bool isShot = false;
     bool collided = false;
     public bool dragDown = false;
-    private int speedTerm = 30;
+    bool doOnce = false;
 
     // Start is called before the first frame update
     void Start()
@@ -31,31 +30,30 @@ public class throwScript : MonoBehaviour
         collidedWith = null;
         collidedWithRegardless = null;
         collided = false;
+        fellOnce = false;
+        isShot = false;
+        doOnce = false;
+
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
         manager.line.SetActive(false);
         Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>());
         Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>(), false);
-        isShot = false;
 
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezePositionY;
-        /* rb.constraints = RigidbodyConstraints.FreezePositionZ;
-        rb.constraints = RigidbodyConstraints.FreezePositionX;
-        rb.mass = 1;
-        rb.freezeRotation = true;*/
+        rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
         rb.useGravity = false;
-        gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
+        gameObject.GetComponent<SphereCollider>().material.bounciness = 0.8f;
     }
 
     private void Update()
     {
-        if (collidedWithRegardless != null && collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
+        if (isShot && collidedWithRegardless != null && collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
         }
 
-        if (collidedWithRegardless != null && collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
+        if (isShot && collidedWithRegardless != null && collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
         {
             dragDown = true;
         }
@@ -122,7 +120,6 @@ public class throwScript : MonoBehaviour
         {
             Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
             manager.line.GetComponent<lineScript>().endPos = targetPosition;
-            Debug.Log(manager.line.GetComponent<lineScript>().endPos);
         }
     }
 
@@ -141,14 +138,6 @@ public class throwScript : MonoBehaviour
             manager.line.GetComponent<lineScript>().endPos = targetPosition;
             manager.line.SetActive(false);
             ShootBall(direction);
-            /*
-             * 
-           if (raycasthit.collider.gameObject.GetComponent<MeshRenderer>().material.name != "Ground (Instance)" && raycasthit.collider.gameObject.transform.position.z != startPosition.z)
-           {
-
-               StartCoroutine(LerpPosition(targetPosition, 1));
-           }
-             */
         }
     }
 
@@ -156,48 +145,6 @@ public class throwScript : MonoBehaviour
     {
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.velocity = direction.normalized * 150;
-    }
-
-    IEnumerator LerpPosition(Vector3 targetPosition, float duration)
-    {
-        // float time = 0;
-
-        var dist = Vector3.Distance(startPosition, targetPosition);
-
-        for (float i = 0.0f; i < 1.0; i += (175 * Time.deltaTime) / dist)
-        {
-            if (sentinel)
-            {
-                i = 1f;
-            }
-            else
-            {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, i);
-            }
-
-            yield return null;
-        }
-
-       /* while (time < duration && !sentinel)
-        {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, time * 2 / duration);
-            time += Time.deltaTime;
-            yield return null;
-        }*/
-
-        if (!manager.throwReady)
-        {
-            manager.createThrow(startPosition);
-        }
-        manager.line.SetActive(false);
-
-        Debug.Log(transform.position.z);
-        Debug.Log(manager.endGameOnZ);
-
-        if (transform.position.z < manager.endGameOnZ && !dragDown)
-        {
-            manager.gameOver.SetActive(true);
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -226,34 +173,28 @@ public class throwScript : MonoBehaviour
 
         if (collision.collider.GetType() == typeof(SphereCollider))
         {
-            collidedWithRegardless = collision.gameObject;
-
-            /*if(collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().isShot)
+            if(!doOnce)
             {
-                Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), GetComponent<Collider>());
+                collidedWithRegardless = collision.gameObject;
+                doOnce = true;
             }
-            else
-            {/*/
+
             if (!collided && isShot)
+            {
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+
+                if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
                 {
-                    sentinel = true;
-                    GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-
-                    if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
-                    {
-                        collidedWith = collision.gameObject;
-                        collisionCount = manager.callHit(collision.gameObject, gameObject);
-                        //Debug.Log(collidedWith.GetComponent<MeshRenderer>().material);
-                    }
-
-                    manager.throwReady = false;
-                    collided = true;
+                    collidedWith = collision.gameObject;
+                    collisionCount = manager.callHit(collision.gameObject, gameObject);
                 }
-            //}
 
+                manager.throwReady = false;
+                collided = true;
+            }
         }
 
-        if(isShot && collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
+        if (isShot && collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
         {
             dragDown = true;
         }
@@ -261,26 +202,6 @@ public class throwScript : MonoBehaviour
         if (isShot && collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
-        }
-
-        if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown && isShot)
-        {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
-
-            int toWhere = UnityEngine.Random.Range(0, 4);
-
-            Vector3 targetPos;
-
-            if (toWhere < 2)
-            {
-                targetPos = transform.position + new Vector3(15, 0, 0);
-            }
-            else
-            {
-                targetPos = transform.position - new Vector3(15, 0, 0);
-            }
-
-            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
         }
     }
 }

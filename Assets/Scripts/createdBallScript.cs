@@ -26,6 +26,11 @@ public class createdBallScript : MonoBehaviour
         {
             dragDown = true;
         }
+        else if(hasOneUp && manager.createdBalls[ballIDY][ballIDX].GetComponent<createdBallScript>().dragDown)
+        {
+            Debug.Log("ss");
+            dragDown = true;
+        }
 
         if(transform.position.z < manager.zLim)
         {
@@ -39,6 +44,7 @@ public class createdBallScript : MonoBehaviour
 
         if(dragDown)
         {
+            Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 10;
             rb.freezeRotation = false;
@@ -54,11 +60,6 @@ public class createdBallScript : MonoBehaviour
             gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
         }
-
-        /*if (collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().isShot)
-        {
-            Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), GetComponent<Collider>());
-        }*/
 
         if (collision.gameObject.Equals(manager.preventor) && dragDown)
         {
@@ -85,26 +86,6 @@ public class createdBallScript : MonoBehaviour
         if (collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
-        }
-
-        if (collision.gameObject.GetComponent<CapsuleCollider>() != null && dragDown)
-        {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 1;
-
-            int toWhere = UnityEngine.Random.Range(0, 4);
-
-            Vector3 targetPos;
-
-            if (toWhere < 2)
-            {
-                targetPos = transform.position + new Vector3(7, 0, 0);
-            }
-            else
-            {
-                targetPos = transform.position - new Vector3(7, 0, 0);
-            }
-
-            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
         }
     }
 }
