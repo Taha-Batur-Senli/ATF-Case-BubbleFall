@@ -10,6 +10,8 @@ public class createdBallScript : MonoBehaviour
     public bool checkedForRemoval = false;
     public int materialIndex = -1;
     public bool dragDown = false;
+    public bool hasOneUp = false;
+    public GameObject toLeft = null;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,11 @@ public class createdBallScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!hasOneUp && toLeft != null && toLeft.GetComponent<createdBallScript>().dragDown)
+        {
+            dragDown = true;
+        }
+
         if(transform.position.z < manager.zLim)
         {
             dragDown = false;
@@ -44,6 +51,7 @@ public class createdBallScript : MonoBehaviour
     {
         if(collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
         {
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
         }
 

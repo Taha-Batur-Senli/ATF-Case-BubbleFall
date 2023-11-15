@@ -27,8 +27,10 @@ public class throwScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        dragDown = false;
         collidedWith = null;
         collidedWithRegardless = null;
+        collided = false;
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
         manager.line.SetActive(false);
@@ -202,6 +204,7 @@ public class throwScript : MonoBehaviour
     {
         if (collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
         {
+            gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
         }
 

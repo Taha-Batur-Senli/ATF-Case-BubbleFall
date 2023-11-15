@@ -67,6 +67,21 @@ public class gameManager : MonoBehaviour
                 createdShift.GetComponent<createdBallScript>().ballIDY = count;
                 createdShift.GetComponent<createdBallScript>().ballIDX = a;
                 createdShift.GetComponent<createdBallScript>().materialIndex = matOfBall;
+                
+                if(count + 1 < amountOnEachRow.Length && a < amountOnEachRow[count + 1])
+                {
+                    createdShift.GetComponent<createdBallScript>().hasOneUp = true;
+                }
+                else
+                {
+                    createdShift.GetComponent<createdBallScript>().hasOneUp = false;
+                }
+
+                if(a > 0)
+                {
+                    createdShift.GetComponent<createdBallScript>().toLeft = createdBalls[count][a - 1];
+                }
+
                 createdBalls[count].Add(createdShift);
             }
 
