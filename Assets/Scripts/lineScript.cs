@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class lineScript : MonoBehaviour
 {
     [SerializeField] public Transform startPos;
+    [SerializeField] public gameManager manager;
     public bool getShot = false;
 
     private LineRenderer rend;

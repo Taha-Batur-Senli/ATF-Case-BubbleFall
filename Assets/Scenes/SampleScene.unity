@@ -150,7 +150,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 305944077}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -4.9901}
   m_LocalScale: {x: 12, y: 10, z: 0.02}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -247,7 +247,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558451102}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.45, y: 0, z: 0}
+  m_LocalPosition: {x: -5.55, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -834,14 +834,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.2605885, y: -0, z: -0, w: 0.96545}
-  m_LocalPosition: {x: 0, y: 118.4, z: -148.9}
+  m_LocalRotation: {x: 0.36755648, y: 0, z: 0, w: 0.9300012}
+  m_LocalPosition: {x: 1.98, y: 260, z: -110.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 30.21, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 43.13, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -867,7 +867,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 717a028eb271a384a8e6a0cd12da64e5, type: 2}
   gameOver: {fileID: 1495938986}
   ignoreWhenFalling: {fileID: 305944077}
-  zLim: 0
+  zLim: 275
   throwName: ThrownSphere
   preventor: {fileID: 2121298678}
   backMostRowZ: 0
@@ -1660,8 +1660,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681314972}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -200, z: 1293}
-  m_LocalScale: {x: 5, y: 1, z: 200}
+  m_LocalPosition: {x: 1.6, y: -200, z: 1293}
+  m_LocalScale: {x: 5.4, y: 1, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1589643913}
@@ -1831,7 +1831,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2104876590}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.45, y: 0, z: 0}
+  m_LocalPosition: {x: 5.68, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2142,5 +2142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startPos: {fileID: 636632491}
+  manager: {fileID: 963194229}
   getShot: 0
   endPos: {x: 0, y: 0, z: 0}

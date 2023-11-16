@@ -12,6 +12,7 @@ public class createdBallScript : MonoBehaviour
     public bool dragDown = false;
     public bool hasOneUp = false;
     public GameObject toLeft = null;
+    GameObject collidedBefore = null;
 
     // Start is called before the first frame update
     void Start()
@@ -60,17 +61,32 @@ public class createdBallScript : MonoBehaviour
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
         }
 
+        if(collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().dragDown && collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
+        {
+            if (collidedBefore != null)
+            {
+                collision.gameObject.GetComponent<throwScript>().dragDown = true;
+                dragDown = true;
+                collidedBefore.GetComponent<throwScript>().dragDown = true;
+            }
+            else
+            {
+                collidedBefore = collision.gameObject;
+                collidedBefore.transform.position = new Vector3(transform.position.x, collidedBefore.transform.position.y, transform.position.z - manager.ballHeight);
+            }
+        }
+
         if (collision.gameObject.Equals(manager.preventor) && dragDown)
         {
             Vector3 targetPos;
 
             if (transform.position.x > 0)
             {
-                targetPos = transform.position + new Vector3(8, 0, 0);
+                targetPos = transform.position + new Vector3(10, 0, 0);
             }
             else
             {
-                targetPos = transform.position - new Vector3(8, 0, 0);
+                targetPos = transform.position - new Vector3(10, 0, 0);
             }
 
             transform.position = Vector3.Lerp(transform.position, targetPos, 3);

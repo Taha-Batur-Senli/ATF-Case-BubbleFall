@@ -26,8 +26,8 @@ public class gameManager : MonoBehaviour
     //[SerializeField] public int amountToCreate;
     [SerializeField] public int[] amountOnEachRow;
     [SerializeField] public int cullChance;
-    [SerializeField] public int ballWidth = 7;
-    [SerializeField] public int ballHeight = 7;
+    [SerializeField] public float ballWidth = 7;
+    [SerializeField] public float ballHeight = 7;
 
     [SerializeField] public float distanceToFloor = -196.67f;
     [SerializeField] public int maxNumberOfBallsInRow = 7;

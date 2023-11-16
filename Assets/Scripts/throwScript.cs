@@ -33,6 +33,7 @@ public class throwScript : MonoBehaviour
         fellOnce = false;
         isShot = false;
         doOnce = false;
+        collisionCount = 0;
 
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
@@ -48,12 +49,22 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
+        if(!isShot)
+        {
+            dragDown = false;
+        }
+
         if (isShot && collidedWithRegardless != null && collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
         }
 
         if (isShot && collidedWithRegardless != null && collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
+        {
+            dragDown = true;
+        }
+
+        if(collisionCount >= 3)
         {
             dragDown = true;
         }
@@ -81,7 +92,7 @@ public class throwScript : MonoBehaviour
             rb.mass = 10;
             rb.freezeRotation = false;
             rb.constraints = ~RigidbodyConstraints.FreezePositionZ;
-            rb.useGravity = true;
+            rb.useGravity = true; 
         }
         else
         {
@@ -161,11 +172,11 @@ public class throwScript : MonoBehaviour
 
             if (transform.position.x > 0 )
             {
-                targetPos = transform.position + new Vector3(8, 0, 0);
+                targetPos = transform.position + new Vector3(10, 0, 0);
             }
             else
             {
-                targetPos = transform.position - new Vector3(8, 0, 0);
+                targetPos = transform.position - new Vector3(10, 0, 0);
             }
 
             transform.position = Vector3.Lerp(transform.position, targetPos, 3);
