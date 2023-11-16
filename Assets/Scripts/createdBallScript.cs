@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class createdBallScript : MonoBehaviour
@@ -44,6 +45,7 @@ public class createdBallScript : MonoBehaviour
 
         if(dragDown)
         {
+            manager.locationIndices[ballIDY][ballIDX] = -1;
             Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 10;
@@ -61,19 +63,116 @@ public class createdBallScript : MonoBehaviour
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
         }
 
-        if(collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().dragDown && collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
+        if (collision.collider.GetType() == typeof(SphereCollider) && collision.gameObject.GetComponent<throwScript>() != null && !collision.gameObject.GetComponent<throwScript>().dragDown && !collision.gameObject.GetComponent<throwScript>().sentinel)
         {
-            if (collidedBefore != null)
+            if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
             {
-                collision.gameObject.GetComponent<throwScript>().dragDown = true;
-                dragDown = true;
-                collidedBefore.GetComponent<throwScript>().dragDown = true;
+                if (collidedBefore != null)
+                {
+                    collision.gameObject.GetComponent<throwScript>().dragDown = true;
+                    dragDown = true;
+                    collidedBefore.GetComponent<throwScript>().dragDown = true;
+                }
+                else
+                {
+                    collidedBefore = collision.gameObject;
+                }
+            }
+
+            if (collision.transform.position.z > transform.position.z)
+            {
+                if (ballIDY + 1 <= manager.amountOnEachRow.Length && manager.locationIndices[ballIDY + 1][ballIDX] == -1)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z + manager.ballHeight);
+                }
+                else if (collision.transform.position.x > transform.position.x && ballIDX + 1 <= manager.maxNumberOfBallsInRow && manager.locationIndices[ballIDY][ballIDX + 1] == -1)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                }
+                else if (collision.transform.position.x < transform.position.x && ballIDX - 1 >= 0 && manager.locationIndices[ballIDY][ballIDX - 1] == -1)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                }
             }
             else
             {
-                collidedBefore = collision.gameObject;
-                collidedBefore.transform.position = new Vector3(transform.position.x, collidedBefore.transform.position.y, transform.position.z - manager.ballHeight);
+                if (ballIDY - 1 >= 0 && manager.locationIndices[ballIDY - 1][ballIDX] == -1)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z - manager.ballHeight);
+                }
+                else if (collision.transform.position.x > transform.position.x && ballIDX + 1 <= manager.maxNumberOfBallsInRow && manager.locationIndices[ballIDY][ballIDX + 1] == -1)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                }
+                else if (collision.transform.position.x < transform.position.x && ballIDX - 1 >= 0 && manager.locationIndices[ballIDY][ballIDX - 1] == -1)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                }
             }
+
+            collision.gameObject.GetComponent<throwScript>().sentinel = true;
+
+            /*Ray rayLeft = new Ray(this.transform.position, new Vector3(transform.position.x - manager.ballWidth, transform.position.y, transform.position.z));
+            Ray rayRight = new Ray(this.transform.position, new Vector3(transform.position.x + manager.ballWidth, transform.position.y, transform.position.z));
+            Ray rayUp = new Ray(this.transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + manager.ballHeight));
+            Ray rayDown = new Ray(this.transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z - manager.ballHeight));
+
+            bool leftFree = true;
+            bool rightFree = true;
+            bool upFree = true;
+            bool downFree = true;
+
+            if (Physics.Raycast(rayLeft, out RaycastHit raycasthit1))
+            {
+                leftFree = false;
+            }
+            else if (Physics.Raycast(rayRight, out RaycastHit raycasthit2))
+            {
+                rightFree = false;
+            }
+            else if (Physics.Raycast(rayUp, out RaycastHit raycasthit3))
+            {
+                upFree = false;
+            }
+            else if (Physics.Raycast(rayDown, out RaycastHit raycasthit4))
+            {
+                downFree = false;
+            }
+
+            if(collision.transform.position.z > transform.position.z)
+            {
+                if(upFree)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z + manager.ballHeight);
+                }
+                else if (collision.transform.position.x > transform.position.x && rightFree)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
+                }
+                else if(collision.transform.position.x < transform.position.x && leftFree) 
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
+                }
+            }
+            else
+            {
+                if (downFree)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z - manager.ballHeight);
+                }
+                else if (collision.transform.position.x > transform.position.x && rightFree)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
+                }
+                else if (collision.transform.position.x < transform.position.x && leftFree)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
+                }
+            }
+
+            collision.gameObject.GetComponent<throwScript>().sentinel = true;
+        }*/
+
         }
 
         if (collision.gameObject.Equals(manager.preventor) && dragDown)
@@ -102,5 +201,10 @@ public class createdBallScript : MonoBehaviour
         {
             dragDown = true;
         }
+    }
+
+    private void isItFree()
+    {
+
     }
 }

@@ -25,7 +25,6 @@ public class gameManager : MonoBehaviour
 
     //[SerializeField] public int amountToCreate;
     [SerializeField] public int[] amountOnEachRow;
-    [SerializeField] public int cullChance;
     [SerializeField] public float ballWidth = 7;
     [SerializeField] public float ballHeight = 7;
 
@@ -33,6 +32,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int maxNumberOfBallsInRow = 7;
 
     public List<List<GameObject>> createdBalls = new List<List<GameObject>>();
+    public List<List<int>> locationIndices = new List<List<int>>();
     public bool throwReady = true;
 
     public float speed = 500000f; // Adjust the speed as needed
@@ -47,6 +47,16 @@ public class gameManager : MonoBehaviour
         gameOver.SetActive(false);
         int matOfBall;
         int count = 0;
+
+        for(int i = 0; i < amountOnEachRow.Length; i++)
+        {
+            locationIndices.Add(new List<int>());
+
+            for(int y = 0; y < maxNumberOfBallsInRow; y++)
+            {
+                locationIndices[i].Add(-1);
+            }
+        }
 
         while (count < amountOnEachRow.Length)
         {
@@ -82,6 +92,7 @@ public class gameManager : MonoBehaviour
                 }
 
                 createdBalls[count].Add(createdShift);
+                locationIndices[count][a] = matOfBall;
             }
 
             count++;

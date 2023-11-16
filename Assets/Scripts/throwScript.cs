@@ -22,6 +22,7 @@ public class throwScript : MonoBehaviour
     bool collided = false;
     public bool dragDown = false;
     bool doOnce = false;
+    public bool sentinel = false;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +35,7 @@ public class throwScript : MonoBehaviour
         isShot = false;
         doOnce = false;
         collisionCount = 0;
+        sentinel = false;
 
         GetComponent<MeshRenderer>().material = manager.matsToGive[UnityEngine.Random.Range(0, manager.matsToGive.Length)];
         startPosition = transform.position;
