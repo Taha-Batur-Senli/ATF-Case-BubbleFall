@@ -14,6 +14,7 @@ public class createdBallScript : MonoBehaviour
     public bool hasOneUp = false;
     public GameObject toLeft = null;
     GameObject collidedBefore = null;
+    public bool belowFree = true;
 
     // Start is called before the first frame update
     void Start()
@@ -84,14 +85,27 @@ public class createdBallScript : MonoBehaviour
                 if (ballIDY + 1 <= manager.amountOnEachRow.Length && manager.locationIndices[ballIDY + 1][ballIDX] == -1)
                 {
                     collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z + manager.ballHeight);
+                    manager.locationIndices[ballIDY + 1][ballIDX] = -2;
+                    collision.gameObject.GetComponent<throwScript>().placedX = ballIDX;
+                    collision.gameObject.GetComponent<throwScript>().placedY = ballIDY + 1;
+                    manager.createdBalls[ballIDY + 1][ballIDX] = collision.gameObject;
+
                 }
                 else if (collision.transform.position.x > transform.position.x && ballIDX + 1 <= manager.maxNumberOfBallsInRow && manager.locationIndices[ballIDY][ballIDX + 1] == -1)
                 {
                     collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                    manager.locationIndices[ballIDY][ballIDX + 1] = -2;
+                    collision.gameObject.GetComponent<throwScript>().placedX = ballIDX + 1;
+                    collision.gameObject.GetComponent<throwScript>().placedY = ballIDY;
+                    manager.createdBalls[ballIDY][ballIDX + 1] = collision.gameObject;
                 }
                 else if (collision.transform.position.x < transform.position.x && ballIDX - 1 >= 0 && manager.locationIndices[ballIDY][ballIDX - 1] == -1)
                 {
                     collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                    manager.locationIndices[ballIDY][ballIDX - 1] = -2;
+                    collision.gameObject.GetComponent<throwScript>().placedX = ballIDX - 1;
+                    collision.gameObject.GetComponent<throwScript>().placedY = ballIDY;
+                    manager.createdBalls[ballIDY][ballIDX - 1] = collision.gameObject;
                 }
             }
             else
@@ -99,79 +113,35 @@ public class createdBallScript : MonoBehaviour
                 if (ballIDY - 1 >= 0 && manager.locationIndices[ballIDY - 1][ballIDX] == -1)
                 {
                     collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z - manager.ballHeight);
+                    manager.locationIndices[ballIDY - 1][ballIDX] = -2;
+                    collision.gameObject.GetComponent<throwScript>().placedX = ballIDX;
+                    collision.gameObject.GetComponent<throwScript>().placedY = ballIDY - 1;
+                    manager.createdBalls[ballIDY - 1][ballIDX] = collision.gameObject;
+                }
+                else if(ballIDY == 0 && belowFree)
+                {
+                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z - manager.ballHeight);
+                    belowFree = false;
                 }
                 else if (collision.transform.position.x > transform.position.x && ballIDX + 1 <= manager.maxNumberOfBallsInRow && manager.locationIndices[ballIDY][ballIDX + 1] == -1)
                 {
                     collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                    manager.locationIndices[ballIDY][ballIDX + 1] = -2;
+                    collision.gameObject.GetComponent<throwScript>().placedX = ballIDX + 1;
+                    collision.gameObject.GetComponent<throwScript>().placedY = ballIDY;
+                    manager.createdBalls[ballIDY][ballIDX + 1] = collision.gameObject;
                 }
                 else if (collision.transform.position.x < transform.position.x && ballIDX - 1 >= 0 && manager.locationIndices[ballIDY][ballIDX - 1] == -1)
                 {
                     collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballWidth, collision.gameObject.transform.position.y, transform.position.z);
+                    manager.locationIndices[ballIDY][ballIDX - 1] = -2;
+                    collision.gameObject.GetComponent<throwScript>().placedX = ballIDX - 1;
+                    collision.gameObject.GetComponent<throwScript>().placedY = ballIDY;
+                    manager.createdBalls[ballIDY][ballIDX - 1] = collision.gameObject;
                 }
             }
 
             collision.gameObject.GetComponent<throwScript>().sentinel = true;
-
-            /*Ray rayLeft = new Ray(this.transform.position, new Vector3(transform.position.x - manager.ballWidth, transform.position.y, transform.position.z));
-            Ray rayRight = new Ray(this.transform.position, new Vector3(transform.position.x + manager.ballWidth, transform.position.y, transform.position.z));
-            Ray rayUp = new Ray(this.transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + manager.ballHeight));
-            Ray rayDown = new Ray(this.transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z - manager.ballHeight));
-
-            bool leftFree = true;
-            bool rightFree = true;
-            bool upFree = true;
-            bool downFree = true;
-
-            if (Physics.Raycast(rayLeft, out RaycastHit raycasthit1))
-            {
-                leftFree = false;
-            }
-            else if (Physics.Raycast(rayRight, out RaycastHit raycasthit2))
-            {
-                rightFree = false;
-            }
-            else if (Physics.Raycast(rayUp, out RaycastHit raycasthit3))
-            {
-                upFree = false;
-            }
-            else if (Physics.Raycast(rayDown, out RaycastHit raycasthit4))
-            {
-                downFree = false;
-            }
-
-            if(collision.transform.position.z > transform.position.z)
-            {
-                if(upFree)
-                {
-                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z + manager.ballHeight);
-                }
-                else if (collision.transform.position.x > transform.position.x && rightFree)
-                {
-                    collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
-                }
-                else if(collision.transform.position.x < transform.position.x && leftFree) 
-                {
-                    collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
-                }
-            }
-            else
-            {
-                if (downFree)
-                {
-                    collision.gameObject.transform.position = new Vector3(transform.position.x, collision.gameObject.transform.position.y, transform.position.z - manager.ballHeight);
-                }
-                else if (collision.transform.position.x > transform.position.x && rightFree)
-                {
-                    collision.gameObject.transform.position = new Vector3(transform.position.x + manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
-                }
-                else if (collision.transform.position.x < transform.position.x && leftFree)
-                {
-                    collision.gameObject.transform.position = new Vector3(transform.position.x - manager.ballHeight, collision.gameObject.transform.position.y, transform.position.z);
-                }
-            }
-
-            collision.gameObject.GetComponent<throwScript>().sentinel = true;
-        }*/
 
         }
 

@@ -24,9 +24,14 @@ public class throwScript : MonoBehaviour
     bool doOnce = false;
     public bool sentinel = false;
 
+    public int placedX;
+    public int placedY;
+
     // Start is called before the first frame update
     void Start()
     {
+        placedX = -1;
+        placedY = -1;
         dragDown = false;
         collidedWith = null;
         collidedWithRegardless = null;
@@ -88,6 +93,10 @@ public class throwScript : MonoBehaviour
 
         if (dragDown && isShot)
         {
+            if(placedY >= 0 && placedX >= 0)
+            {
+                manager.locationIndices[placedY][placedX] = -1;
+            }
             Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
             fellOnce = true;
             Rigidbody rb = GetComponent<Rigidbody>();
@@ -199,7 +208,8 @@ public class throwScript : MonoBehaviour
                 if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
                 {
                     collidedWith = collision.gameObject;
-                    collisionCount = manager.callHit(collision.gameObject, gameObject);
+                    //collisionCount = manager.callHit(collision.gameObject, gameObject);
+                    collisionCount = manager.hitCheck(gameObject);
                 }
 
                 manager.throwReady = false;

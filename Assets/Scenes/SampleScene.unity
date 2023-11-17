@@ -452,6 +452,9 @@ MonoBehaviour:
   collisionCount: 0
   isShot: 0
   dragDown: 0
+  sentinel: 0
+  placedX: 0
+  placedY: 0
 --- !u!1 &668236056
 GameObject:
   m_ObjectHideFlags: 0
@@ -869,11 +872,13 @@ MonoBehaviour:
   ignoreWhenFalling: {fileID: 305944077}
   zLim: 275
   throwName: ThrownSphere
+  distance: 0
+  zStartThrow: 309
   preventor: {fileID: 2121298678}
   backMostRowZ: 0
   endGameOnZ: 322
+  emptyRowCount: 0
   amountOnEachRow: 0400000005000000060000000600000003000000040000000500000006000000070000000700000004000000070000000500000007000000060000000700000007000000070000000700000007000000070000000700000007000000070000000700000007000000070000000700000007000000070000000700000007000000
-  cullChance: 3
   ballWidth: 7
   ballHeight: 7
   distanceToFloor: -196.67
@@ -1152,6 +1157,7 @@ MonoBehaviour:
   dragDown: 0
   hasOneUp: 0
   toLeft: {fileID: 0}
+  belowFree: 1
 --- !u!1 &1342330200
 GameObject:
   m_ObjectHideFlags: 0
