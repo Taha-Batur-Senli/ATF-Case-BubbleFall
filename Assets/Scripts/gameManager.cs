@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public string throwName = "ThrownSphere";
     [SerializeField] public int distance;
     [SerializeField] public int zStartThrow;
+    public UnityEngine.Vector3 startpos;
 
     [SerializeField] public GameObject preventor;
     public float backMostRowZ;
@@ -48,6 +50,7 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        startpos = new UnityEngine.Vector3(thrownBall.transform.position.x, distanceToFloor, thrownBall.transform.position.z);
         distance = (int) heightLow - zStartThrow;
         emptyRowCount = (distance / (int) ballWidth);
 
@@ -68,6 +71,11 @@ public class gameManager : MonoBehaviour
         for (int a = 0; a < emptyRowCount; a++)
         {
             createdBalls.Add(new List<GameObject>());
+
+            for (int x  = 0; x < maxNumberOfBallsInRow; x++)
+            {
+                createdBalls[a].Add(null);
+            }
         }
 
         while (count < amountOnEachRow.Length)
@@ -82,7 +90,7 @@ public class gameManager : MonoBehaviour
             for (int a = 0; a < amountOnEachRow[count]; a++)
             {
                 GameObject createdShift = Instantiate(hitBallTemplate);
-                createdShift.transform.position = new Vector3(widthLow + (ballWidth * a), distanceToFloor, heightLow + (ballHeight * count));
+                createdShift.transform.position = new UnityEngine.Vector3(widthLow + (ballWidth * a), distanceToFloor, heightLow + (ballHeight * count));
                 matOfBall = UnityEngine.Random.Range(0, matsToGive.Length);
                 createdShift.GetComponent<MeshRenderer>().material = matsToGive[matOfBall];
                 createdShift.GetComponent<createdBallScript>().ballIDY = count;
@@ -116,6 +124,8 @@ public class gameManager : MonoBehaviour
         }
 
         backMostRowZ = heightLow + (ballHeight * count);
+
+        createThrow(startpos);
     }
 
     // Update is called once per frame
@@ -124,13 +134,62 @@ public class gameManager : MonoBehaviour
         if (!throwReady)
         {
             throwReady = true;
-            createThrow(thrownBall.GetComponent<throwScript>().startPosition);
         }
+    }
+
+    public void placeBall(GameObject hitBall, GameObject thrownBall)
+    {
+        int yPlace = hitBall.GetComponent<createdBallScript>().ballIDY + emptyRowCount;
+        int xPlace = hitBall.GetComponent<createdBallScript>().ballIDX;
+
+        if (yPlace == 0)
+        {
+            gameOver.SetActive(true);
+        }
+        else if(yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
+        {
+            generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall);
+        }
+        else if(xPlace + 1 < maxNumberOfBallsInRow && createdBalls[yPlace][xPlace + 1] == null)
+        {
+            generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+        }
+        else if (xPlace - 1 >= 0 && createdBalls[yPlace][xPlace - 1] == null)
+        {
+            generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+        }
+        else if (yPlace - 1 > 0 && createdBalls[yPlace - 1][xPlace] == null)
+        {
+            generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall);
+        }
+
+        if(thrownBall.gameObject.GetComponent<MeshRenderer>().material.name.Equals(hitBall.GetComponent<MeshRenderer>().material.name))
+        {
+            hitCheck(thrownBall);
+        }
+
+        Destroy(thrownBall);
+        createThrow(startpos);
+    }
+
+    private void generateForThrown(int xloc, int yloc, float xCoord, float zCoord, GameObject thrownBall)
+    {
+        GameObject createdShift = Instantiate(hitBallTemplate);
+        createdShift.transform.position = new UnityEngine.Vector3(xCoord, distanceToFloor, zCoord);
+        createdShift.GetComponent<MeshRenderer>().material = thrownBall.gameObject.GetComponent<MeshRenderer>().material;
+        createdShift.GetComponent<createdBallScript>().ballIDY = yloc;
+        createdShift.GetComponent<createdBallScript>().ballIDX = xloc;
+        createdShift.GetComponent<createdBallScript>().materialIndex = thrownBall.GetComponent<throwScript>().matID;
+
+        locationIndices[yloc][xloc] = thrownBall.GetComponent<throwScript>().matID;
+        amountOnEachRow[yloc]++;
+        createdBalls[yloc][xloc] = createdShift;
     }
 
     public int hitCheck(GameObject target)
     {
-        List<GameObject> savedPositions = new List<GameObject>();
+        return 0;
+        /*List<GameObject> savedPositions = new List<GameObject>();
         if (!target.GetComponent<createdBallScript>().checkedForRemoval)
         {
             savedPositions.Add(target);
@@ -272,7 +331,7 @@ public class gameManager : MonoBehaviour
             }
         }
 
-        return savedPositions.Count;
+        return savedPositions.Count;*/
     }
 
     public int callHit(GameObject target, GameObject hitter, int prior = 0, bool addhitter = true)
@@ -479,7 +538,7 @@ public class gameManager : MonoBehaviour
         }
     }
 
-    public void createThrow(Vector3 startPos)
+    public void createThrow(UnityEngine.Vector3 startPos)
     {
         GameObject newOne = Instantiate(thrownBall);
         newOne.transform.position = startPos;

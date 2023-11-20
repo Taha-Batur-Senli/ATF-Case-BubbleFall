@@ -29,10 +29,10 @@ public class createdBallScript : MonoBehaviour
         {
             dragDown = true;
         }
-        else if(hasOneUp && manager.createdBalls[ballIDY + 1][ballIDX].GetComponent<createdBallScript>().dragDown)
+        /*else if(hasOneUp && ballIDY + 1 < manager.amountOnEachRow.Length && ballIDX < manager.amountOnEachRow[ballIDY + 1] && manager.createdBalls[ballIDY + 1][ballIDX] != null && manager.createdBalls[ballIDY + 1][ballIDX].GetComponent<createdBallScript>().dragDown)
         {
             dragDown = true;
-        }
+        }*/
 
         if(transform.position.z < manager.zLim)
         {
@@ -58,7 +58,7 @@ public class createdBallScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
+        /*if(collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
         {
             gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
@@ -170,7 +170,7 @@ public class createdBallScript : MonoBehaviour
         if (collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
         {
             dragDown = true;
-        }
+        }*/
     }
 
     private void isItFree()
