@@ -35,23 +35,40 @@ public class createdBallScript : MonoBehaviour
 
         if(transform.position.z < manager.zLim)
         {
-            dragDown = false;
-            Rigidbody rb = GetComponent<Rigidbody>();
-            rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
-            rb.mass = 1;
-            rb.freezeRotation = true;
-            rb.useGravity = false;
+            Destroy(gameObject);
         }
 
         if(dragDown)
         {
-            manager.locationIndices[ballIDY][ballIDX] = -1;
+            manager.locationIndices[ballIDY + manager.emptyRowCount][ballIDX] = -1;
+            manager.createdBalls[ballIDY + manager.emptyRowCount][ballIDX] = null;
+
             Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
+            Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 10;
             rb.freezeRotation = false;
             rb.constraints = ~RigidbodyConstraints.FreezePositionZ;
             rb.useGravity = true;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.Equals(manager.preventor) && dragDown)
+        {
+            Vector3 targetPos;
+
+            if (transform.position.x > 0)
+            {
+                targetPos = transform.position + new Vector3(10, 0, 0);
+            }
+            else
+            {
+                targetPos = transform.position - new Vector3(10, 0, 0);
+            }
+
+            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
         }
     }
 }

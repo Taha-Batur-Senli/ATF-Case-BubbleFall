@@ -53,68 +53,6 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
-        /* if(!isShot)
-         {
-             dragDown = false;
-         }
-
-         if (isShot && collidedWithRegardless != null && collidedWithRegardless.GetComponent<createdBallScript>() != null && collidedWithRegardless.GetComponent<createdBallScript>().dragDown == true)
-         {
-             dragDown = true;
-         }
-
-         if (isShot && collidedWithRegardless != null && collidedWithRegardless.GetComponent<throwScript>() != null && collidedWithRegardless.GetComponent<throwScript>().dragDown == true)
-         {
-             dragDown = true;
-         }
-
-         if(collisionCount >= 3)
-         {
-             dragDown = true;
-         }
-
-         if (collided && transform.position.z < manager.endGameOnZ && !fellOnce)
-         {
-             manager.gameOver.SetActive(true);
-         }
-
-         if (transform.position.z < manager.zLim)
-         {
-             dragDown = false;
-             Rigidbody rb = GetComponent<Rigidbody>();
-             rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
-             rb.mass = 1;
-             rb.freezeRotation = true;
-             rb.useGravity = false;
-         }
-
-         if (dragDown && isShot)
-         {
-             if(placedY >= 0 && placedX >= 0)
-             {
-                 manager.locationIndices[placedY][placedX] = -1;
-             }
-             Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
-             fellOnce = true;
-             Rigidbody rb = GetComponent<Rigidbody>();
-             rb.mass = 10;
-             rb.freezeRotation = false;
-             rb.constraints = ~RigidbodyConstraints.FreezePositionZ;
-             rb.useGravity = true; 
-         }
-         else
-         {
-             if (collided)
-             {
-                 dragDown = false;
-                 Rigidbody rb = GetComponent<Rigidbody>();
-                 rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX;
-                 rb.mass = 1;
-                 rb.freezeRotation = true;
-                 rb.useGravity = false;
-             }
-         }*/
-
         if (Input.GetMouseButton(0) && !manager.gameOver.gameObject.activeSelf)
         {
             getLoc();
@@ -168,28 +106,6 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        /*if (collision.gameObject.Equals(manager.ignoreWhenFalling) && dragDown)
-        {
-            gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
-            Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
-        }
-
-        if (collision.gameObject.Equals(manager.preventor) && dragDown)
-        {
-            Vector3 targetPos;
-
-            if (transform.position.x > 0 )
-            {
-                targetPos = transform.position + new Vector3(10, 0, 0);
-            }
-            else
-            {
-                targetPos = transform.position - new Vector3(10, 0, 0);
-            }
-
-            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
-        }*/
-
         if (collision.collider.GetType() == typeof(SphereCollider))
         {
             if(!doOnce)
@@ -198,31 +114,6 @@ public class throwScript : MonoBehaviour
                 manager.placeBall(collidedWithRegardless, gameObject);
                 doOnce = true;
             }
-
-            /*if (!collided && isShot)
-            {
-                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
-
-                if (collision.collider.gameObject.GetComponent<MeshRenderer>().material.name.Equals(GetComponent<MeshRenderer>().material.name))
-                {
-                    collidedWith = collision.gameObject;
-                    //collisionCount = manager.callHit(collision.gameObject, gameObject);
-                    collisionCount = manager.hitCheck(gameObject);
-                }
-
-                manager.throwReady = false;
-                collided = true;
-            }*/
         }
-
-        /*if (isShot && collision.gameObject.GetComponent<throwScript>() != null && collision.gameObject.GetComponent<throwScript>().dragDown == true)
-        {
-            dragDown = true;
-        }
-
-        if (isShot && collision.gameObject.GetComponent<createdBallScript>() != null && collision.gameObject.GetComponent<createdBallScript>().dragDown == true)
-        {
-            dragDown = true;
-        }*/
     }
 }

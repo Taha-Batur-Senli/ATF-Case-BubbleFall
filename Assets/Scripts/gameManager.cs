@@ -143,6 +143,9 @@ public class gameManager : MonoBehaviour
     {
         int yPlace = hitBall.GetComponent<createdBallScript>().ballIDY + emptyRowCount;
         int xPlace = hitBall.GetComponent<createdBallScript>().ballIDX;
+        bool checkup = false;
+        int xLoc = 0;
+        int yLoc = 0;
 
         float diffbwXs = thrownBall.transform.position.x - hitBall.transform.position.x;
 
@@ -154,21 +157,29 @@ public class gameManager : MonoBehaviour
         {
             if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
             {
-                generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall);
+                checkup = generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall, checkup);
+                xLoc = xPlace;
+                yLoc = yPlace + 1;
             }
             else if (thrownBall.transform.position.z < hitBall.transform.position.z && yPlace - 1 > 0 && createdBalls[yPlace - 1][xPlace] == null)
             {
-                generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall);
+                checkup = generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall, checkup);
+                xLoc = xPlace;
+                yLoc = yPlace - 1;
             }
             else
             {
                 if (thrownBall.transform.position.x > hitBall.transform.position.x && xPlace + 1 < maxNumberOfBallsInRow && createdBalls[yPlace][xPlace + 1] == null)
                 {
-                    generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+                    checkup = generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall, checkup);
+                    xLoc = xPlace + 1;
+                    yLoc = yPlace;
                 }
                 else if (thrownBall.transform.position.x < hitBall.transform.position.x && xPlace - 1 >= 0 && createdBalls[yPlace][xPlace - 1] == null)
                 {
-                    generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+                    checkup = generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall, checkup);
+                    xLoc = xPlace - 1;
+                    yLoc = yPlace;
                 }
             }
         }
@@ -176,35 +187,43 @@ public class gameManager : MonoBehaviour
         {
             if (thrownBall.transform.position.x > hitBall.transform.position.x && xPlace + 1 < maxNumberOfBallsInRow && createdBalls[yPlace][xPlace + 1] == null)
             {
-                generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+                checkup = generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall, checkup);
+                xLoc = xPlace + 1;
+                yLoc = yPlace;
             }
             else if (thrownBall.transform.position.x < hitBall.transform.position.x && xPlace - 1 >= 0 && createdBalls[yPlace][xPlace - 1] == null)
             {
-                generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+                checkup = generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall, checkup);
+                xLoc = xPlace - 1;
+                yLoc = yPlace;
             }
             else
             {
                 if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
                 {
-                    generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall);
+                    checkup = generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall, checkup);
+                    xLoc = xPlace;
+                    yLoc = yPlace + 1;
                 }
                 else if (thrownBall.transform.position.z < hitBall.transform.position.z && yPlace - 1 > 0 && createdBalls[yPlace - 1][xPlace] == null)
                 {
-                    generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall);
+                    checkup = generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall, checkup);
+                    xLoc = xPlace;
+                    yLoc = yPlace - 1;
                 }
             }
         }
 
-        if(thrownBall.gameObject.GetComponent<MeshRenderer>().material.name.Equals(hitBall.GetComponent<MeshRenderer>().material.name))
+        if(checkup || hitBall.GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
         {
-            hitCheck(thrownBall);
+            hitCheck(createdBalls[yLoc][xLoc], xLoc, yLoc, onLast: true);
         }
 
         Destroy(thrownBall);
         createThrow(startpos);
     }
 
-    private void generateForThrown(int xloc, int yloc, float xCoord, float zCoord, GameObject thrownBall)
+    private bool generateForThrown(int xloc, int yloc, float xCoord, float zCoord, GameObject thrownBall, bool checkup)
     {
         GameObject createdShift = Instantiate(hitBallTemplate);
         createdShift.transform.position = new UnityEngine.Vector3(xCoord, distanceToFloor, zCoord);
@@ -219,29 +238,105 @@ public class gameManager : MonoBehaviour
         if(yloc + 1 < createdBalls.Count && createdBalls[yloc + 1][xloc] != null)
         {
             createdShift.GetComponent<createdBallScript>().oneUp = createdBalls[yloc + 1][xloc];
+
+            if(createdBalls[yloc + 1][xloc].GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
+            {
+                checkup = true;
+            }
         }
 
-        if (yloc - 1 < createdBalls.Count && createdBalls[yloc - 1][xloc] != null)
+        if (yloc - 1 >= 0 && createdBalls[yloc - 1][xloc] != null)
         {
             createdBalls[yloc - 1][xloc].GetComponent<createdBallScript>().oneUp = createdShift;
+
+            if (createdBalls[yloc - 1][xloc].GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
+            {
+                checkup = true;
+            }
         }
 
-        if (xloc - 1 > 0 && createdBalls[yloc][xloc - 1] != null)
+        if (xloc - 1 >= 0 && createdBalls[yloc][xloc - 1] != null)
         {
             createdShift.GetComponent<createdBallScript>().toLeft = createdBalls[yloc][xloc - 1];
+
+            if (createdBalls[yloc][xloc - 1].GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
+            {
+                checkup = true;
+            }
         }
 
         if (xloc + 1 < maxNumberOfBallsInRow && createdBalls[yloc][xloc + 1] != null)
         {
             createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().toLeft = createdShift;
+
+            if (createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
+            {
+                checkup = true;
+            }
         }
 
         createdBalls[yloc][xloc] = createdShift;
+
+        return checkup;
     }
 
-    public int hitCheck(GameObject target)
+    public void hitCheck(GameObject target, int xloc, int yloc, List<GameObject> list = null, bool onLast = false)
     {
-        return 0;
+        if(list == null)
+        {
+            list = new List<GameObject>();
+        }
+        Debug.Log("start");
+
+        if (!target.GetComponent<createdBallScript>().checkedForRemoval)
+        {
+            target.GetComponent<createdBallScript>().checkedForRemoval = true;
+            list.Add(target);
+
+            if (yloc + 1 < createdBalls.Count && createdBalls[yloc + 1][xloc] != null && !createdBalls[yloc + 1][xloc].GetComponent<createdBallScript>().checkedForRemoval && createdBalls[yloc + 1][xloc].GetComponent<createdBallScript>().materialIndex.Equals(target.GetComponent<createdBallScript>().materialIndex))
+            {
+                Debug.Log("up");
+                hitCheck(createdBalls[yloc + 1][xloc], xloc, yloc + 1, list);
+            }
+
+            if (yloc - 1 >= 0 && createdBalls[yloc - 1][xloc] != null && !createdBalls[yloc - 1][xloc].GetComponent<createdBallScript>().checkedForRemoval && createdBalls[yloc - 1][xloc].GetComponent<createdBallScript>().materialIndex.Equals(target.GetComponent<createdBallScript>().materialIndex))
+            {
+                Debug.Log("down");
+                hitCheck(createdBalls[yloc - 1][xloc], xloc, yloc - 1, list);
+            }
+
+            if (xloc - 1 >= 0 && createdBalls[yloc][xloc - 1] != null && !createdBalls[yloc][xloc - 1].GetComponent<createdBallScript>().checkedForRemoval && createdBalls[yloc][xloc - 1].GetComponent<createdBallScript>().materialIndex.Equals(target.GetComponent<createdBallScript>().materialIndex))
+            {
+                Debug.Log("left");
+                hitCheck(createdBalls[yloc][xloc - 1], xloc - 1, yloc, list);
+            }
+
+            if (xloc + 1 < maxNumberOfBallsInRow && createdBalls[yloc][xloc + 1] != null && !createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().checkedForRemoval && createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().materialIndex.Equals(target.GetComponent<createdBallScript>().materialIndex))
+            {
+                Debug.Log("right");
+                hitCheck(createdBalls[yloc][xloc + 1], xloc + 1, yloc, list);
+            }
+        }
+
+        if(onLast)
+        {
+            Debug.Log("onlast");
+            if (list.Count >= 3)
+            {
+                Debug.Log("true");
+                foreach (var item in list)
+                {
+                    item.GetComponent<createdBallScript>().dragDown = true;
+                }
+            }
+            else
+            {
+                foreach (var item in list)
+                {
+                    item.GetComponent<createdBallScript>().checkedForRemoval = false;
+                }
+            }
+        }
         /*List<GameObject> savedPositions = new List<GameObject>();
         if (!target.GetComponent<createdBallScript>().checkedForRemoval)
         {
