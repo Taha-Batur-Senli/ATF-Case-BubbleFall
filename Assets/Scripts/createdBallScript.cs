@@ -13,6 +13,7 @@ public class createdBallScript : MonoBehaviour
     public bool dragDown = false;
     public GameObject oneUp = null;
     public GameObject toLeft = null;
+    public GameObject toRight = null;
     public bool belowFree = true;
 
     // Start is called before the first frame update

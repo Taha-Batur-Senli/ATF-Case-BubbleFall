@@ -122,6 +122,11 @@ public class gameManager : MonoBehaviour
                 {
                     createdBalls[a][b].GetComponent<createdBallScript>().oneUp = createdBalls[a + 1][b];
                 }
+
+                if (b + 1 < amountOnEachRow[a] && createdBalls[a][b] != null && createdBalls[a][b + 1] != null)
+                {
+                    createdBalls[a][b].GetComponent<createdBallScript>().toRight = createdBalls[a][b + 1];
+                }
             }
         }
 
@@ -258,6 +263,7 @@ public class gameManager : MonoBehaviour
         if (xloc - 1 >= 0 && createdBalls[yloc][xloc - 1] != null)
         {
             createdShift.GetComponent<createdBallScript>().toLeft = createdBalls[yloc][xloc - 1];
+            createdBalls[yloc][xloc - 1].GetComponent<createdBallScript>().toRight = createdShift;
 
             if (createdBalls[yloc][xloc - 1].GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
             {
@@ -268,6 +274,7 @@ public class gameManager : MonoBehaviour
         if (xloc + 1 < maxNumberOfBallsInRow && createdBalls[yloc][xloc + 1] != null)
         {
             createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().toLeft = createdShift;
+            createdShift.GetComponent<createdBallScript>().toRight = createdBalls[yloc][xloc + 1];
 
             if (createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().materialIndex.Equals(thrownBall.GetComponent<throwScript>().matID))
             {
