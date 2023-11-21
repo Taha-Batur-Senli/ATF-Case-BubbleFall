@@ -17,9 +17,7 @@ public class throwScript : MonoBehaviour
     public GameObject collidedWithRegardless;
     public int collisionCount;
 
-    bool fellOnce = false;
     public bool isShot = false;
-    bool collided = false;
     public bool dragDown = false;
     bool doOnce = false;
     public bool sentinel = false;
@@ -35,8 +33,6 @@ public class throwScript : MonoBehaviour
         dragDown = false;
         collidedWith = null;
         collidedWithRegardless = null;
-        collided = false;
-        fellOnce = false;
         isShot = false;
         doOnce = false;
         collisionCount = 0;

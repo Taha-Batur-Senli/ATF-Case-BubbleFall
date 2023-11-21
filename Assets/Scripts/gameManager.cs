@@ -96,15 +96,6 @@ public class gameManager : MonoBehaviour
                 createdShift.GetComponent<createdBallScript>().ballIDY = count;
                 createdShift.GetComponent<createdBallScript>().ballIDX = a;
                 createdShift.GetComponent<createdBallScript>().materialIndex = matOfBall;
-                
-                if(count + 1 < amountOnEachRow.Length && a < amountOnEachRow[count + 1])
-                {
-                    createdShift.GetComponent<createdBallScript>().hasOneUp = true;
-                }
-                else
-                {
-                    createdShift.GetComponent<createdBallScript>().hasOneUp = false;
-                }
 
                 if(a > 0)
                 {
@@ -121,6 +112,17 @@ public class gameManager : MonoBehaviour
             }
 
             count++;
+        }
+
+        for(int a = 0; a < amountOnEachRow.Length - 1; a++)
+        {
+            for(int b = 0; b < amountOnEachRow[a]; b++)
+            {
+                if (createdBalls[a][b] != null && createdBalls[a+1][b] != null)
+                {
+                    createdBalls[a][b].GetComponent<createdBallScript>().oneUp = createdBalls[a + 1][b];
+                }
+            }
         }
 
         backMostRowZ = heightLow + (ballHeight * count);
@@ -213,6 +215,27 @@ public class gameManager : MonoBehaviour
         createdShift.SetActive(true);
         locationIndices[yloc][xloc] = thrownBall.GetComponent<throwScript>().matID;
         amountOnEachRow[yloc]++;
+
+        if(yloc + 1 < createdBalls.Count && createdBalls[yloc + 1][xloc] != null)
+        {
+            createdShift.GetComponent<createdBallScript>().oneUp = createdBalls[yloc + 1][xloc];
+        }
+
+        if (yloc - 1 < createdBalls.Count && createdBalls[yloc - 1][xloc] != null)
+        {
+            createdBalls[yloc - 1][xloc].GetComponent<createdBallScript>().oneUp = createdShift;
+        }
+
+        if (xloc - 1 > 0 && createdBalls[yloc][xloc - 1] != null)
+        {
+            createdShift.GetComponent<createdBallScript>().toLeft = createdBalls[yloc][xloc - 1];
+        }
+
+        if (xloc + 1 < maxNumberOfBallsInRow && createdBalls[yloc][xloc + 1] != null)
+        {
+            createdBalls[yloc][xloc + 1].GetComponent<createdBallScript>().toLeft = createdShift;
+        }
+
         createdBalls[yloc][xloc] = createdShift;
     }
 
