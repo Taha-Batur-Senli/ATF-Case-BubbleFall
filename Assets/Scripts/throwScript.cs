@@ -30,7 +30,6 @@ public class throwScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("saxs");
         placedX = -1;
         placedY = -1;
         dragDown = false;

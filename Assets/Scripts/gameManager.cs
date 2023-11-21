@@ -21,10 +21,12 @@ public class gameManager : MonoBehaviour
     [SerializeField] public string throwName = "ThrownSphere";
     [SerializeField] public int distance;
     [SerializeField] public int zStartThrow;
+    [SerializeField] public int failOnRow = 2;
     public UnityEngine.Vector3 startpos;
 
     [SerializeField] public GameObject preventor;
     public float backMostRowZ;
+    [SerializeField] public float xDiffTreshold = 1.5f;
 
     [SerializeField] public int endGameOnZ;
     [SerializeField] public int emptyRowCount = 0;
@@ -41,11 +43,8 @@ public class gameManager : MonoBehaviour
     public List<List<int>> locationIndices = new List<List<int>>();
     public bool throwReady = true;
 
-    public float speed = 500000f; // Adjust the speed as needed
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
-    // [SerializeField] public float widthHigh;
-    // [SerializeField] public float heightHigh;
 
     // Start is called before the first frame update
     void Start()
@@ -90,6 +89,7 @@ public class gameManager : MonoBehaviour
             for (int a = 0; a < amountOnEachRow[count]; a++)
             {
                 GameObject createdShift = Instantiate(hitBallTemplate);
+                createdShift.SetActive(true);
                 createdShift.transform.position = new UnityEngine.Vector3(widthLow + (ballWidth * a), distanceToFloor, heightLow + (ballHeight * count));
                 matOfBall = UnityEngine.Random.Range(0, matsToGive.Length);
                 createdShift.GetComponent<MeshRenderer>().material = matsToGive[matOfBall];
@@ -142,25 +142,55 @@ public class gameManager : MonoBehaviour
         int yPlace = hitBall.GetComponent<createdBallScript>().ballIDY + emptyRowCount;
         int xPlace = hitBall.GetComponent<createdBallScript>().ballIDX;
 
-        if (yPlace == 0)
+        float diffbwXs = thrownBall.transform.position.x - hitBall.transform.position.x;
+
+        if (yPlace == failOnRow)
         {
             gameOver.SetActive(true);
         }
-        else if(yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
+        else if(Math.Abs(diffbwXs) < xDiffTreshold)
         {
-            generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall);
+            if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
+            {
+                generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall);
+            }
+            else if (thrownBall.transform.position.z < hitBall.transform.position.z && yPlace - 1 > 0 && createdBalls[yPlace - 1][xPlace] == null)
+            {
+                generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall);
+            }
+            else
+            {
+                if (thrownBall.transform.position.x > hitBall.transform.position.x && xPlace + 1 < maxNumberOfBallsInRow && createdBalls[yPlace][xPlace + 1] == null)
+                {
+                    generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+                }
+                else if (thrownBall.transform.position.x < hitBall.transform.position.x && xPlace - 1 >= 0 && createdBalls[yPlace][xPlace - 1] == null)
+                {
+                    generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+                }
+            }
         }
-        else if(xPlace + 1 < maxNumberOfBallsInRow && createdBalls[yPlace][xPlace + 1] == null)
+        else
         {
-            generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
-        }
-        else if (xPlace - 1 >= 0 && createdBalls[yPlace][xPlace - 1] == null)
-        {
-            generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
-        }
-        else if (yPlace - 1 > 0 && createdBalls[yPlace - 1][xPlace] == null)
-        {
-            generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall);
+            if (thrownBall.transform.position.x > hitBall.transform.position.x && xPlace + 1 < maxNumberOfBallsInRow && createdBalls[yPlace][xPlace + 1] == null)
+            {
+                generateForThrown(xPlace + 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x + ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+            }
+            else if (thrownBall.transform.position.x < hitBall.transform.position.x && xPlace - 1 >= 0 && createdBalls[yPlace][xPlace - 1] == null)
+            {
+                generateForThrown(xPlace - 1, yPlace, createdBalls[yPlace][xPlace].transform.position.x - ballWidth, createdBalls[yPlace][xPlace].transform.position.z, thrownBall);
+            }
+            else
+            {
+                if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
+                {
+                    generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall);
+                }
+                else if (thrownBall.transform.position.z < hitBall.transform.position.z && yPlace - 1 > 0 && createdBalls[yPlace - 1][xPlace] == null)
+                {
+                    generateForThrown(xPlace, yPlace - 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z - ballHeight, thrownBall);
+                }
+            }
         }
 
         if(thrownBall.gameObject.GetComponent<MeshRenderer>().material.name.Equals(hitBall.GetComponent<MeshRenderer>().material.name))
@@ -177,10 +207,10 @@ public class gameManager : MonoBehaviour
         GameObject createdShift = Instantiate(hitBallTemplate);
         createdShift.transform.position = new UnityEngine.Vector3(xCoord, distanceToFloor, zCoord);
         createdShift.GetComponent<MeshRenderer>().material = thrownBall.gameObject.GetComponent<MeshRenderer>().material;
-        createdShift.GetComponent<createdBallScript>().ballIDY = yloc;
+        createdShift.GetComponent<createdBallScript>().ballIDY = yloc - emptyRowCount;
         createdShift.GetComponent<createdBallScript>().ballIDX = xloc;
         createdShift.GetComponent<createdBallScript>().materialIndex = thrownBall.GetComponent<throwScript>().matID;
-
+        createdShift.SetActive(true);
         locationIndices[yloc][xloc] = thrownBall.GetComponent<throwScript>().matID;
         amountOnEachRow[yloc]++;
         createdBalls[yloc][xloc] = createdShift;
@@ -541,6 +571,7 @@ public class gameManager : MonoBehaviour
     public void createThrow(UnityEngine.Vector3 startPos)
     {
         GameObject newOne = Instantiate(thrownBall);
+        newOne.SetActive(true);
         newOne.transform.position = startPos;
         line.GetComponent<lineScript>().startPos = newOne.transform;
         newOne.SetActive(true);
