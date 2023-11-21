@@ -25,7 +25,8 @@ public class createdBallScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (oneUp == null && toLeft != null && toLeft.GetComponent<createdBallScript>().dragDown)
+        //added to right here
+        if (oneUp == null && toRight == null && toLeft != null && toLeft.GetComponent<createdBallScript>().dragDown)
         {
             dragDown = true;
         }
