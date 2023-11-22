@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEditor.Progress;
 using static UnityEngine.GraphicsBuffer;
 
 public class gameManager : MonoBehaviour
@@ -22,13 +23,13 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int distance;
     [SerializeField] public int zStartThrow;
     [SerializeField] public int failOnRow = 2;
+    [SerializeField] public int cameraAdvanceAmount = 7;
     public UnityEngine.Vector3 startpos;
 
     [SerializeField] public GameObject preventor;
     public float backMostRowZ;
     [SerializeField] public float xDiffTreshold = 1.5f;
 
-    [SerializeField] public int endGameOnZ;
     [SerializeField] public int emptyRowCount = 0;
 
     //[SerializeField] public int amountToCreate;
@@ -42,6 +43,7 @@ public class gameManager : MonoBehaviour
     public List<List<GameObject>> createdBalls = new List<List<GameObject>>();
     public List<List<int>> locationIndices = new List<List<int>>();
     public bool throwReady = true;
+    private int advanceRowCount = 0;
 
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
@@ -141,6 +143,15 @@ public class gameManager : MonoBehaviour
         if (!throwReady)
         {
             throwReady = true;
+        }
+
+        if (checkIfAdvance(advanceRowCount + emptyRowCount))
+        {
+            advanceRowCount++;
+            Camera.main.transform.position = new UnityEngine.Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z + cameraAdvanceAmount);
+            startpos = new UnityEngine.Vector3(startpos.x, startpos.y, startpos.z + cameraAdvanceAmount);
+            preventor.transform.position = new UnityEngine.Vector3(preventor.transform.position.x, preventor.transform.position.y, preventor.transform.position.z + cameraAdvanceAmount);
+            failOnRow++;
         }
     }
 
@@ -328,6 +339,7 @@ public class gameManager : MonoBehaviour
                 {
                     item.GetComponent<createdBallScript>().dragDown = true;
                 }
+
             }
             else
             {
@@ -338,6 +350,22 @@ public class gameManager : MonoBehaviour
             }
         }
         
+    }
+
+    private bool checkIfAdvance(int idY)
+    {
+        for(int y = idY; y > 0; y--)
+        {
+            for(int x = 0; x < maxNumberOfBallsInRow; x++)
+            {
+                if (createdBalls[y][x] != null && !createdBalls[y][x].GetComponent<createdBallScript>().dragDown)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public void createThrow(UnityEngine.Vector3 startPos)

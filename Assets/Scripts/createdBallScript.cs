@@ -19,6 +19,7 @@ public class createdBallScript : MonoBehaviour
     void Start()
     {
         gameObject.GetComponent<SphereCollider>().material.bounciness = 0;
+        GetComponent<Collider>().isTrigger = false;
     }
 
     // Update is called once per frame
@@ -46,12 +47,32 @@ public class createdBallScript : MonoBehaviour
 
             Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
+            GetComponent<Collider>().isTrigger = true;
 
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 10;
             rb.freezeRotation = false;
             rb.constraints = ~RigidbodyConstraints.FreezePositionZ;
             rb.useGravity = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.Equals(manager.preventor) && dragDown)
+        {
+            Vector3 targetPos;
+
+            if (transform.position.x > 0)
+            {
+                targetPos = transform.position + new Vector3(10, 0, 0);
+            }
+            else
+            {
+                targetPos = transform.position - new Vector3(10, 0, 0);
+            }
+
+            transform.position = Vector3.Lerp(transform.position, targetPos, 3);
         }
     }
 

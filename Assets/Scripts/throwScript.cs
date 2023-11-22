@@ -94,14 +94,11 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetType() == typeof(SphereCollider))
+        if (collision.collider.GetType() == typeof(SphereCollider) && !collision.collider.GetComponent<createdBallScript>().dragDown && !doOnce)
         {
-            if(!doOnce)
-            {
-                collidedWithRegardless = collision.gameObject;
-                manager.placeBall(collidedWithRegardless, gameObject);
-                doOnce = true;
-            }
+            collidedWithRegardless = collision.gameObject;
+            manager.placeBall(collidedWithRegardless, gameObject);
+            doOnce = true;
         }
     }
 }
