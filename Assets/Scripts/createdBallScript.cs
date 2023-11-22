@@ -14,7 +14,6 @@ public class createdBallScript : MonoBehaviour
     public GameObject oneUp = null;
     public GameObject toLeft = null;
     public GameObject toRight = null;
-    public bool belowFree = true;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +25,7 @@ public class createdBallScript : MonoBehaviour
     void Update()
     {
         //added to right here
-        if (oneUp == null && toRight == null && toLeft != null && toLeft.GetComponent<createdBallScript>().dragDown)
+        if (oneUp == null && toLeft != null && toLeft.GetComponent<createdBallScript>().dragDown)
         {
             dragDown = true;
         }
@@ -47,6 +46,7 @@ public class createdBallScript : MonoBehaviour
 
             Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>(), false);
             Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>());
+
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 10;
             rb.freezeRotation = false;

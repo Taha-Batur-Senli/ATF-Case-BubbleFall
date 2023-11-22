@@ -11,32 +11,20 @@ public class throwScript : MonoBehaviour
 {
     [SerializeField] private Camera mainCam;
     [SerializeField] private gameManager manager;
+
     public Vector3 startPosition;
-
-    public GameObject collidedWith;
     public GameObject collidedWithRegardless;
-    public int collisionCount;
-
     public bool isShot = false;
-    public bool dragDown = false;
-    bool doOnce = false;
-    public bool sentinel = false;
     public int matID;
-    public int placedX;
-    public int placedY;
+
+    private bool doOnce = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        placedX = -1;
-        placedY = -1;
-        dragDown = false;
-        collidedWith = null;
         collidedWithRegardless = null;
         isShot = false;
         doOnce = false;
-        collisionCount = 0;
-        sentinel = false;
         matID = UnityEngine.Random.Range(0, manager.matsToGive.Length);
 
         GetComponent<MeshRenderer>().material = manager.matsToGive[matID];
@@ -53,14 +41,14 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(0) && !manager.gameOver.gameObject.activeSelf)
+        if (!isShot && Input.GetMouseButton(0) && !manager.gameOver.gameObject.activeSelf && !EventSystem.current.IsPointerOverGameObject())
         {
             getLoc();
             manager.line.GetComponent<lineScript>().getShot = true;
             manager.line.SetActive(true);
         }
 
-        if (Input.GetMouseButtonUp(0) && !manager.gameOver.gameObject.activeSelf)
+        if (!isShot && Input.GetMouseButtonUp(0) && !manager.gameOver.gameObject.activeSelf && !EventSystem.current.IsPointerOverGameObject())
         {
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.mass = 1;
