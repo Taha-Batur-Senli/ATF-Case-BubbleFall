@@ -18,12 +18,13 @@ public class gameManager : MonoBehaviour
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
     [SerializeField] public GameObject ignoreWhenFalling;
+    [SerializeField] public GameObject preventor;
+    [SerializeField] public int matLen = 7;
     [SerializeField] public int zLim;
     [SerializeField] public int distance;
     [SerializeField] public int zStartThrow;
     [SerializeField] public int failOnRow = 2;
     [SerializeField] public int cameraAdvanceAmount = 7;
-    [SerializeField] public GameObject preventor;
     [SerializeField] public float xDiffTreshold = 1.5f;
     [SerializeField] public int emptyRowCount = 0;
     [SerializeField] public int[] amountOnEachRow;
@@ -33,6 +34,9 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int maxNumberOfBallsInRow = 7;
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
+    [SerializeField] public int levelID = 1;
+    [SerializeField] public int maxLevel = 10;
+    [SerializeField] public GameObject nextLevelButton;
 
     int[] totalRowCount;
     public UnityEngine.Vector3 startpos;
@@ -46,6 +50,20 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(matLen > matsToGive.Length || matLen < 0)
+        {
+            matLen = matsToGive.Length;
+        }
+
+        if(levelID < maxLevel)
+        {
+            nextLevelButton.SetActive(true);
+        }
+        else
+        {
+            nextLevelButton.SetActive(false);
+        }
+
         startpos = new UnityEngine.Vector3(thrownBall.transform.position.x, distanceToFloor, thrownBall.transform.position.z);
         distance = (int) heightLow - zStartThrow;
         emptyRowCount = (distance / (int) ballWidth);
@@ -90,7 +108,7 @@ public class gameManager : MonoBehaviour
                 GameObject createdShift = Instantiate(hitBallTemplate);
                 createdShift.SetActive(true);
                 createdShift.transform.position = new UnityEngine.Vector3(widthLow + (ballWidth * a), distanceToFloor, heightLow + (ballHeight * count));
-                matOfBall = UnityEngine.Random.Range(0, matsToGive.Length);
+                matOfBall = UnityEngine.Random.Range(0, matLen);
                 createdShift.GetComponent<MeshRenderer>().material = matsToGive[matOfBall];
                 createdShift.GetComponent<createdBallScript>().ballIDY = count;
                 createdShift.GetComponent<createdBallScript>().ballIDX = a;
@@ -414,5 +432,16 @@ public class gameManager : MonoBehaviour
     public void restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void goToMenu()
+    {
+        SceneManager.LoadScene("MainMenuScene");
+    }
+
+    public void nextLevel()
+    {
+
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

@@ -24,7 +24,7 @@ public class throwScript : MonoBehaviour
         collidedWith = null;
         isShot = false;
         doOnce = false;
-        matID = UnityEngine.Random.Range(0, manager.matsToGive.Length);
+        matID = UnityEngine.Random.Range(0, manager.matLen);
 
         GetComponent<MeshRenderer>().material = manager.matsToGive[matID];
         manager.line.SetActive(false);
