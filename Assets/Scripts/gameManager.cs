@@ -13,6 +13,7 @@ public class gameManager : MonoBehaviour
 {
     [SerializeField] GameObject thrownBall;
     [SerializeField] GameObject hitBallTemplate;
+    [SerializeField] public GameObject backCube;
     [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
@@ -33,6 +34,7 @@ public class gameManager : MonoBehaviour
     [SerializeField] public float widthLow;
     [SerializeField] public float heightLow;
 
+    int[] totalRowCount;
     public UnityEngine.Vector3 startpos;
     public float backMostRowZ;
     public List<List<GameObject>> createdBalls = new List<List<GameObject>>();
@@ -48,11 +50,13 @@ public class gameManager : MonoBehaviour
         distance = (int) heightLow - zStartThrow;
         emptyRowCount = (distance / (int) ballWidth);
 
+        totalRowCount = new int[amountOnEachRow.Length + emptyRowCount];
+
         gameOver.SetActive(false);
         int matOfBall;
         int count = 0;
 
-        for(int i = 0; i < amountOnEachRow.Length + emptyRowCount; i++)
+        for(int i = 0; i < totalRowCount.Length; i++)
         {
             locationIndices.Add(new List<int>());
 
@@ -127,15 +131,28 @@ public class gameManager : MonoBehaviour
 
         backMostRowZ = heightLow + (ballHeight * count);
 
+        float posZ = 0;
+        int index = count + emptyRowCount - 1;
+
+        while (createdBalls[index][0] == null)
+        {
+            index--;
+        }
+
+        posZ = (ballHeight * 2) + createdBalls[index][0].transform.position.z;
+
+        backCube.transform.position = new UnityEngine.Vector3(backCube.transform.position.x, backCube.transform.position.y, posZ);
+
         createThrow(startpos);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(createdBalls == null)
+        if(checkIfOver())
         {
-            Debug.Log("ss");
+            gameOver.SetActive(true);
+            enabled = false;
         }
 
         if (!throwReady)
@@ -154,6 +171,22 @@ public class gameManager : MonoBehaviour
         }
     }
 
+    private bool checkIfOver()
+    {
+        for(int y = 0; y < createdBalls.Count; y++)
+        {
+            for(int x = 0; x < maxNumberOfBallsInRow; x++)
+            {
+                if (createdBalls[y][x] != null && !createdBalls[y][x].GetComponent<createdBallScript>().dragDown)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public void placeBall(GameObject hitBall, GameObject thrownBall)
     {
         int yPlace = hitBall.GetComponent<createdBallScript>().ballIDY + emptyRowCount;
@@ -170,7 +203,7 @@ public class gameManager : MonoBehaviour
         }
         else if(Math.Abs(diffbwXs) < xDiffTreshold)
         {
-            if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
+            if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < totalRowCount.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
             {
                 checkup = generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall, checkup);
                 xLoc = xPlace;
@@ -214,7 +247,7 @@ public class gameManager : MonoBehaviour
             }
             else
             {
-                if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < amountOnEachRow.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
+                if (thrownBall.transform.position.z > hitBall.transform.position.z && yPlace + 1 < totalRowCount.Length - 1 && createdBalls[yPlace + 1][xPlace] == null)
                 {
                     checkup = generateForThrown(xPlace, yPlace + 1, createdBalls[yPlace][xPlace].transform.position.x, createdBalls[yPlace][xPlace].transform.position.z + ballHeight, thrownBall, checkup);
                     xLoc = xPlace;
@@ -248,7 +281,7 @@ public class gameManager : MonoBehaviour
         createdShift.GetComponent<createdBallScript>().materialIndex = thrownBall.GetComponent<throwScript>().matID;
         createdShift.SetActive(true);
         locationIndices[yloc][xloc] = thrownBall.GetComponent<throwScript>().matID;
-        amountOnEachRow[yloc]++;
+        totalRowCount[yloc]++;
 
         if(yloc + 1 < createdBalls.Count && createdBalls[yloc + 1][xloc] != null)
         {

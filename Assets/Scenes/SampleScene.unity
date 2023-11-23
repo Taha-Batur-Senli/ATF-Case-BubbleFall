@@ -506,7 +506,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &636632492
 MonoBehaviour:
@@ -522,8 +522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCam: {fileID: 963194227}
   manager: {fileID: 963194229}
-  startPosition: {x: 0, y: 0, z: 0}
-  collidedWithRegardless: {fileID: 0}
+  collidedWith: {fileID: 0}
   isShot: 0
   matID: 0
 --- !u!1 &668236056
@@ -694,7 +693,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &801868844
 GameObject:
@@ -914,7 +913,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 43.13, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
@@ -930,6 +929,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thrownBall: {fileID: 636632486}
   hitBallTemplate: {fileID: 1190048059}
+  backCube: {fileID: 1342330200}
   line: {fileID: 2142560238}
   matsToGive:
   - {fileID: 2100000, guid: 2b2b6b09497378f42b1c3caac6e398b9, type: 2}
@@ -942,24 +942,23 @@ MonoBehaviour:
   gameOver: {fileID: 1495938986}
   ignoreWhenFalling: {fileID: 305944077}
   zLim: 275
-  throwName: ThrownSphere
   distance: 0
   zStartThrow: 309
   failOnRow: 2
-  startpos: {x: 0, y: 0, z: 0}
+  cameraAdvanceAmount: 7
   preventor: {fileID: 2121298678}
-  backMostRowZ: 0
   xDiffTreshold: 1.5
-  endGameOnZ: 322
   emptyRowCount: 0
-  amountOnEachRow: 0400000005000000060000000600000003000000040000000500000006000000070000000700000004000000070000000500000007000000060000000700000007000000070000000700000007000000070000000700000007000000070000000700000007000000070000000700000007000000070000000700000007000000
+  amountOnEachRow: 04000000050000000300000002000000000000000500000006000000070000000800000009000000
   ballWidth: 7
   ballHeight: 7
   distanceToFloor: -196.67
   maxNumberOfBallsInRow: 7
-  throwReady: 1
   widthLow: -20
   heightLow: 360
+  startpos: {x: 0, y: 0, z: 0}
+  backMostRowZ: 0
+  throwReady: 1
 --- !u!1 &1006142047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,7 +1207,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1190048065
 MonoBehaviour:
@@ -1244,7 +1243,7 @@ GameObject:
   - component: {fileID: 1342330203}
   - component: {fileID: 1342330202}
   m_Layer: 0
-  m_Name: Cube (3)
+  m_Name: BackCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1257,13 +1256,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342330200}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 4.996}
-  m_LocalScale: {x: 12, y: 10, z: 0.02}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.99, y: -200, z: 2292.2}
+  m_LocalScale: {x: 66, y: 10, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1681314976}
-  m_RootOrder: 4
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1342330202
 BoxCollider:
@@ -1823,10 +1822,9 @@ Transform:
   - {fileID: 558451103}
   - {fileID: 2104876591}
   - {fileID: 305944078}
-  - {fileID: 1342330201}
   - {fileID: 2121298679}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1732579310
 GameObject:
@@ -1894,7 +1892,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1809654202
 GameObject:
@@ -1991,7 +1989,7 @@ RectTransform:
   - {fileID: 1503355063}
   - {fileID: 540374164}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2127,7 +2125,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1681314976}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2121298680
 BoxCollider:
