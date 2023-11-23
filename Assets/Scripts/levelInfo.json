@@ -1,16 +1,22 @@
 {
     "levels":
     [
-        {"levelID": 1,  "matLen": 2, "amountOnEachRow": [1,3,4,5,2,3,4,-1,5,5,6,7]},
-        {"levelID": 2,  "matLen": 3, "amountOnEachRow": [3,4,5,6]},
-        {"levelID": 3,  "matLen": 4, "amountOnEachRow": [3,4,5,6,7]},
-        {"levelID": 4,  "matLen": 5, "amountOnEachRow": [3,4,5,6,7,5]},
-        {"levelID": 5,  "matLen": 6, "amountOnEachRow": [3,4,5,6,7,5,4]},
+        {"levelID": 1,  
+        "matLen": 2, 
+        "amountOnEachRow": [1,3,4,5,2,3,4,-2,
+                             5,5,0,3,0,0,3,-2,
+                             5,0,6,3,-1,0,3,-2,
+                             5,5,6,0,-1,2,3,-2,
+                             5,5,6,3,-1,0,3,-2]},
+        {"levelID": 2,  "matLen": 7, "amountOnEachRow": [3,4,5,6]},
+        {"levelID": 3,  "matLen": 7, "amountOnEachRow": [3,4,5,6,7]},
+        {"levelID": 4,  "matLen": 7, "amountOnEachRow": [3,4,5,6,7,5]},
+        {"levelID": 5,  "matLen": 7, "amountOnEachRow": [3,4,5,6,7,5,4]},
         {"levelID": 6,  "matLen": 7, "amountOnEachRow": [3,4,5,6,7,5,4,3]},
         {"levelID": 7,  "matLen": 7, "amountOnEachRow": [7,7,6,7,5,4,7]},
-        {"levelID": 8,  "matLen": 3, "amountOnEachRow": [5,5,4,5,2,3,4,5]},
-        {"levelID": 9,  "matLen": 6, "amountOnEachRow": [7,7,7,7,7,5,1,1]},
-        {"levelID": 10, "matLen": 5, "amountOnEachRow": [7,4,7,6,5,5,4,2]}
+        {"levelID": 8,  "matLen": 7, "amountOnEachRow": [5,5,4,5,2,3,4,5]},
+        {"levelID": 9,  "matLen": 7, "amountOnEachRow": [7,7,7,7,7,5,1,1]},
+        {"levelID": 10, "matLen": 7, "amountOnEachRow": [7,4,7,6,5,5,4,2]}
     ]
     
 }

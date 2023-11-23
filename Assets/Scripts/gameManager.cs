@@ -56,45 +56,98 @@ public class gameManager : MonoBehaviour
     {
         matLen = levelData.getmatLen();
         levelID = levelData.getID();
-        amountOnEachRow = levelData.getrows();
+        levelData.getrows();
 
-        if(matLen > matsToGive.Length || matLen < 0)
-        {
-            matLen = matsToGive.Length;
-        }
-
-        if(levelID < maxLevel)
-        {
-            nextLevelButton.SetActive(true);
-        }
-        else
-        {
-            nextLevelButton.SetActive(false);
-        }
-
+        int t = 0; 
         startpos = new UnityEngine.Vector3(thrownBall.transform.position.x, distanceToFloor, thrownBall.transform.position.z);
-        distance = (int) heightLow - zStartThrow;
-        emptyRowCount = (distance / (int) ballWidth);
+        distance = (int)heightLow - zStartThrow;
+        emptyRowCount = (distance / (int)ballWidth);
 
-        totalRowCount = new int[amountOnEachRow.Length + emptyRowCount];
+        totalRowCount = new int[levelData.rowCount + emptyRowCount];
 
         gameOver.SetActive(false);
         int matOfBall;
         int count = 0;
 
+        for(int x = 0; x < emptyRowCount; x++)
+        {
+            createdBalls.Add(new List<GameObject>());
 
+            for(int y = 0; y < maxNumberOfBallsInRow; y++)
+            {
+                createdBalls[x].Add(null);
+            }
+        }
 
-        for(int i = 0; i < totalRowCount.Length; i++)
+        for (int i = 0; i < totalRowCount.Length; i++)
         {
             locationIndices.Add(new List<int>());
 
-            for(int y = 0; y < maxNumberOfBallsInRow; y++)
+            for (int y = 0; y < maxNumberOfBallsInRow; y++)
             {
                 locationIndices[i].Add(-1);
             }
         }
 
-        for (int a = 0; a < emptyRowCount; a++)
+        for (int a = 0; a < levelData.rowCount; a++)
+        {
+            createdBalls.Add(new List<GameObject>());
+
+            for (int b = 0; b < maxNumberOfBallsInRow; b++)
+            {
+                if(levelData.elems[a][b] >= 0)
+                {
+                    GameObject createdShift = Instantiate(hitBallTemplate);
+                    createdShift.SetActive(true);
+                    createdShift.transform.position = new UnityEngine.Vector3(widthLow + (ballWidth * b), distanceToFloor, heightLow + (ballHeight * a));
+                    matOfBall = levelData.elems[a][b];
+                    createdShift.GetComponent<MeshRenderer>().material = matsToGive[matOfBall];
+                    createdShift.GetComponent<createdBallScript>().ballIDY = a;
+                    createdShift.GetComponent<createdBallScript>().ballIDX = b;
+                    createdShift.GetComponent<createdBallScript>().materialIndex = matOfBall;
+
+                    if (b > 0)
+                    {
+                        createdShift.GetComponent<createdBallScript>().toLeft = createdBalls[a + emptyRowCount][b - 1];
+                    }
+
+                    createdBalls[a + emptyRowCount].Add(createdShift);
+                    locationIndices[a][b] = matOfBall;
+                }
+                else
+                {
+                    createdBalls[a + emptyRowCount].Add(null);
+                }
+            }
+        }
+
+        for (int a = 0; a < levelData.rowCount - 1; a++)
+        {
+            for (int b = 0; b < maxNumberOfBallsInRow; b++)
+            {
+                if (createdBalls[a + emptyRowCount][b] != null && createdBalls[a + emptyRowCount + 1][b] != null)
+                {
+                    createdBalls[a + emptyRowCount][b].GetComponent<createdBallScript>().oneUp = createdBalls[a + emptyRowCount + 1][b];
+                }
+
+                if (b + 1 < maxNumberOfBallsInRow && createdBalls[a + emptyRowCount][b] != null && createdBalls[a + emptyRowCount][b + 1] != null)
+                {
+                    createdBalls[a + emptyRowCount][b].GetComponent<createdBallScript>().toRight = createdBalls[a + emptyRowCount][b + 1];
+                }
+            }
+        }
+
+        if (matLen > matsToGive.Length || matLen < 0)
+        {
+            matLen = matsToGive.Length;
+        }
+
+        if(levelID >= maxLevel)
+        {
+            Destroy(nextLevelButton);
+        }
+
+        /*for (int a = 0; a < emptyRowCount; a++)
         {
             createdBalls.Add(new List<GameObject>());
 
@@ -102,9 +155,9 @@ public class gameManager : MonoBehaviour
             {
                 createdBalls[a].Add(null);
             }
-        }
+        }*/
 
-        while (count < amountOnEachRow.Length)
+        /*while (count < amountOnEachRow.Length)
         {
             createdBalls.Add(new List<GameObject>());
 
@@ -139,33 +192,12 @@ public class gameManager : MonoBehaviour
             }
 
             count++;
-        }
-
-        for(int a = 0; a < amountOnEachRow.Length - 1; a++)
-        {
-            for(int b = 0; b < amountOnEachRow[a]; b++)
-            {
-                if (createdBalls[a + emptyRowCount][b] != null && createdBalls[a + emptyRowCount + 1][b] != null)
-                {
-                    createdBalls[a + emptyRowCount][b].GetComponent<createdBallScript>().oneUp = createdBalls[a + emptyRowCount + 1][b];
-                }
-
-                if (b + 1 < amountOnEachRow[a] && createdBalls[a + emptyRowCount][b] != null && createdBalls[a + emptyRowCount][b + 1] != null)
-                {
-                    createdBalls[a + emptyRowCount][b].GetComponent<createdBallScript>().toRight = createdBalls[a + emptyRowCount][b + 1];
-                }
-            }
-        }
+        }*/
 
         backMostRowZ = heightLow + (ballHeight * count);
 
         float posZ = 0;
-        int index = count + emptyRowCount - 1;
-
-        while (createdBalls[index][0] == null)
-        {
-            index--;
-        }
+        int index = levelData.rowCount + emptyRowCount - 1;
 
         posZ = (ballHeight * 2) + createdBalls[index][0].transform.position.z;
 

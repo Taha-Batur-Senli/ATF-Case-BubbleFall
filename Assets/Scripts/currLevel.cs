@@ -7,6 +7,8 @@ public class currLevel : MonoBehaviour
 {
     public static Level level;
     public static Levels levels;
+    public List<List<int>> elems = new List<List<int>>();
+    public int rowCount = -1;
 
     private void Start()
     {
@@ -34,8 +36,22 @@ public class currLevel : MonoBehaviour
         return level.levelID;
     }
 
-    public int[] getrows()
+    public void getrows()
     {
-        return level.amountOnEachRow;
+        elems.Add(new List<int>());
+        rowCount++;
+
+        foreach (int id in level.amountOnEachRow)
+        {
+            if(id < -1)
+            {
+                elems.Add(new List<int>());
+                rowCount++;
+            }
+            else
+            {
+                elems[rowCount].Add(id);
+            }
+        }
     }
 }
