@@ -39,6 +39,13 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
+        Vector3 viewPos = mainCam.WorldToViewportPoint(transform.position);
+        if (!(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0))
+        {
+            manager.createThrow(manager.startpos);
+            Destroy(gameObject);
+        }
+
         if (!isShot && Input.GetMouseButton(0) && !manager.gameOver.gameObject.activeSelf && !EventSystem.current.IsPointerOverGameObject())
         {
             getLoc();

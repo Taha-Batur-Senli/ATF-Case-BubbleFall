@@ -117,14 +117,14 @@ public class gameManager : MonoBehaviour
         {
             for(int b = 0; b < amountOnEachRow[a]; b++)
             {
-                if (createdBalls[a][b] != null && createdBalls[a+1][b] != null)
+                if (createdBalls[a + emptyRowCount][b] != null && createdBalls[a + emptyRowCount + 1][b] != null)
                 {
-                    createdBalls[a][b].GetComponent<createdBallScript>().oneUp = createdBalls[a + 1][b];
+                    createdBalls[a + emptyRowCount][b].GetComponent<createdBallScript>().oneUp = createdBalls[a + emptyRowCount + 1][b];
                 }
 
-                if (b + 1 < amountOnEachRow[a] && createdBalls[a][b] != null && createdBalls[a][b + 1] != null)
+                if (b + 1 < amountOnEachRow[a] && createdBalls[a + emptyRowCount][b] != null && createdBalls[a + emptyRowCount][b + 1] != null)
                 {
-                    createdBalls[a][b].GetComponent<createdBallScript>().toRight = createdBalls[a][b + 1];
+                    createdBalls[a + emptyRowCount][b].GetComponent<createdBallScript>().toRight = createdBalls[a + emptyRowCount][b + 1];
                 }
             }
         }
