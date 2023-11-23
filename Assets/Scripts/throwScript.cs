@@ -16,6 +16,8 @@ public class throwScript : MonoBehaviour
     public bool isShot = false;
     public int matID;
 
+    //Regular Speed: 150
+    private int speed = 150;
     private bool doOnce = false;
 
     // Start is called before the first frame update
@@ -94,7 +96,7 @@ public class throwScript : MonoBehaviour
     public void ShootBall(Vector3 direction)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.velocity = direction.normalized * 150;
+        rb.velocity = direction.normalized * speed;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -104,6 +106,11 @@ public class throwScript : MonoBehaviour
             collidedWith = collision.gameObject;
             manager.placeBall(collidedWith, gameObject);
             doOnce = true;
+        }
+
+        if (collision.collider.name.Equals("BackCube"))
+        {
+            Debug.Log("ss");
         }
     }
 }

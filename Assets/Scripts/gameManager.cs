@@ -11,6 +11,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class gameManager : MonoBehaviour
 {
+    [SerializeField] currLevel levelData;
     [SerializeField] GameObject thrownBall;
     [SerializeField] GameObject hitBallTemplate;
     [SerializeField] public GameObject backCube;
@@ -38,6 +39,9 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int maxLevel = 10;
     [SerializeField] public GameObject nextLevelButton;
 
+    [TextAreaAttribute]
+    public string MyTextArea;
+
     int[] totalRowCount;
     public UnityEngine.Vector3 startpos;
     public float backMostRowZ;
@@ -50,6 +54,10 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        matLen = levelData.getmatLen();
+        levelID = levelData.getID();
+        amountOnEachRow = levelData.getrows();
+
         if(matLen > matsToGive.Length || matLen < 0)
         {
             matLen = matsToGive.Length;
@@ -73,6 +81,8 @@ public class gameManager : MonoBehaviour
         gameOver.SetActive(false);
         int matOfBall;
         int count = 0;
+
+
 
         for(int i = 0; i < totalRowCount.Length; i++)
         {
@@ -441,7 +451,6 @@ public class gameManager : MonoBehaviour
 
     public void nextLevel()
     {
-
-        SceneManager.LoadScene("MainMenuScene");
+        levelData.loadLevel(levelID);
     }
 }
