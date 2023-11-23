@@ -12,8 +12,7 @@ public class throwScript : MonoBehaviour
     [SerializeField] private Camera mainCam;
     [SerializeField] private gameManager manager;
 
-    public Vector3 startPosition;
-    public GameObject collidedWithRegardless;
+    public GameObject collidedWith;
     public bool isShot = false;
     public int matID;
 
@@ -22,13 +21,12 @@ public class throwScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        collidedWithRegardless = null;
+        collidedWith = null;
         isShot = false;
         doOnce = false;
         matID = UnityEngine.Random.Range(0, manager.matsToGive.Length);
 
         GetComponent<MeshRenderer>().material = manager.matsToGive[matID];
-        startPosition = transform.position;
         manager.line.SetActive(false);
         Physics.IgnoreCollision(manager.preventor.GetComponent<Collider>(), GetComponent<Collider>());
         Physics.IgnoreCollision(manager.ignoreWhenFalling.GetComponent<Collider>(), GetComponent<Collider>(), false);
@@ -96,8 +94,8 @@ public class throwScript : MonoBehaviour
     {
         if (collision.collider.GetType() == typeof(SphereCollider) && !collision.collider.GetComponent<createdBallScript>().dragDown && !doOnce)
         {
-            collidedWithRegardless = collision.gameObject;
-            manager.placeBall(collidedWithRegardless, gameObject);
+            collidedWith = collision.gameObject;
+            manager.placeBall(collidedWith, gameObject);
             doOnce = true;
         }
     }

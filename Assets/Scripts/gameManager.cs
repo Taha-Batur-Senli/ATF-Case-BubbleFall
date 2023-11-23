@@ -17,36 +17,29 @@ public class gameManager : MonoBehaviour
     [SerializeField] public Material[] matsToGive;
     [SerializeField] public GameObject gameOver;
     [SerializeField] public GameObject ignoreWhenFalling;
-    //public bool canShoot = false;
     [SerializeField] public int zLim;
-    [SerializeField] public string throwName = "ThrownSphere";
     [SerializeField] public int distance;
     [SerializeField] public int zStartThrow;
     [SerializeField] public int failOnRow = 2;
     [SerializeField] public int cameraAdvanceAmount = 7;
-    public UnityEngine.Vector3 startpos;
-
     [SerializeField] public GameObject preventor;
-    public float backMostRowZ;
     [SerializeField] public float xDiffTreshold = 1.5f;
-
     [SerializeField] public int emptyRowCount = 0;
-
-    //[SerializeField] public int amountToCreate;
     [SerializeField] public int[] amountOnEachRow;
     [SerializeField] public float ballWidth = 7;
     [SerializeField] public float ballHeight = 7;
-
     [SerializeField] public float distanceToFloor = -196.67f;
     [SerializeField] public int maxNumberOfBallsInRow = 7;
+    [SerializeField] public float widthLow;
+    [SerializeField] public float heightLow;
 
+    public UnityEngine.Vector3 startpos;
+    public float backMostRowZ;
     public List<List<GameObject>> createdBalls = new List<List<GameObject>>();
     public List<List<int>> locationIndices = new List<List<int>>();
     public bool throwReady = true;
     private int advanceRowCount = 0;
-
-    [SerializeField] public float widthLow;
-    [SerializeField] public float heightLow;
+    GameObject currentBall = null;
 
     // Start is called before the first frame update
     void Start()
@@ -140,6 +133,11 @@ public class gameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(createdBalls == null)
+        {
+            Debug.Log("ss");
+        }
+
         if (!throwReady)
         {
             throwReady = true;
@@ -152,6 +150,7 @@ public class gameManager : MonoBehaviour
             startpos = new UnityEngine.Vector3(startpos.x, startpos.y, startpos.z + cameraAdvanceAmount);
             preventor.transform.position = new UnityEngine.Vector3(preventor.transform.position.x, preventor.transform.position.y, preventor.transform.position.z + cameraAdvanceAmount);
             failOnRow++;
+            currentBall.transform.position = startpos;
         }
     }
 
@@ -376,6 +375,7 @@ public class gameManager : MonoBehaviour
         line.GetComponent<lineScript>().startPos = newOne.transform;
         newOne.SetActive(true);
         throwReady = true;
+        currentBall = newOne;
     }
 
     public void restart()
