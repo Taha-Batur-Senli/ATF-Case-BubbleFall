@@ -111,7 +111,6 @@ public class throwScript : MonoBehaviour
 
         if (collision.collider.name.Equals("BackCube"))
         {
-            Debug.Log("ss");
             int pos = (int) transform.position.x / manager.maxNumberOfBallsInRow;
             int mid = manager.maxNumberOfBallsInRow / 2;
 
