@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -41,7 +42,7 @@ public class throwScript : MonoBehaviour
 
     private void Update()
     {
-        Vector3 viewPos = mainCam.WorldToViewportPoint(transform.position);
+        UnityEngine.Vector3 viewPos = mainCam.WorldToViewportPoint(transform.position);
         if (!(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0))
         {
             manager.createThrow(manager.startpos);
@@ -70,7 +71,7 @@ public class throwScript : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit raycasthit))
         {
-            Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
+            UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
             manager.line.GetComponent<lineScript>().endPos = targetPosition;
         }
     }
@@ -81,19 +82,19 @@ public class throwScript : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit raycasthit) && !isShot)
         {
             // Get the direction from this object to the point where the ray hit
-            Vector3 direction = raycasthit.point - transform.position;
+            UnityEngine.Vector3 direction = raycasthit.point - transform.position;
 
             // Normalize the direction vector to get a unit vector
             direction.Normalize();
             isShot = true;
-            Vector3 targetPosition = new Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
+            UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
             manager.line.GetComponent<lineScript>().endPos = targetPosition;
             manager.line.SetActive(false);
             ShootBall(direction);
         }
     }
 
-    public void ShootBall(Vector3 direction)
+    public void ShootBall(UnityEngine.Vector3 direction)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.velocity = direction.normalized * speed;
@@ -111,6 +112,12 @@ public class throwScript : MonoBehaviour
         if (collision.collider.name.Equals("BackCube"))
         {
             Debug.Log("ss");
+            int pos = (int) transform.position.x / manager.maxNumberOfBallsInRow;
+            int mid = manager.maxNumberOfBallsInRow / 2;
+
+            manager.generateForThrown(mid + pos, manager.totalRowCount.Length - 1, manager.widthLow + (manager.ballWidth * (pos + mid)), manager.heightLow + (manager.ballHeight * (manager.levelData.rowCount - 1)), gameObject, true);
+            manager.createThrow(manager.startpos);
+            Destroy(gameObject);
         }
     }
 }

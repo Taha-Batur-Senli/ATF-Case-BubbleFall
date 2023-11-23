@@ -11,9 +11,10 @@ using static UnityEngine.GraphicsBuffer;
 
 public class gameManager : MonoBehaviour
 {
-    [SerializeField] currLevel levelData;
     [SerializeField] GameObject thrownBall;
     [SerializeField] GameObject hitBallTemplate;
+
+    [SerializeField] public currLevel levelData;
     [SerializeField] public GameObject backCube;
     [SerializeField] public GameObject line;
     [SerializeField] public Material[] matsToGive;
@@ -39,15 +40,13 @@ public class gameManager : MonoBehaviour
     [SerializeField] public int maxLevel = 10;
     [SerializeField] public GameObject nextLevelButton;
 
-    [TextAreaAttribute]
-    public string MyTextArea;
-
-    int[] totalRowCount;
+    public int[] totalRowCount;
     public UnityEngine.Vector3 startpos;
     public float backMostRowZ;
     public List<List<GameObject>> createdBalls = new List<List<GameObject>>();
     public List<List<int>> locationIndices = new List<List<int>>();
     public bool throwReady = true;
+
     private int advanceRowCount = 0;
     GameObject currentBall = null;
 
@@ -58,7 +57,6 @@ public class gameManager : MonoBehaviour
         levelID = levelData.getID();
         levelData.getrows();
 
-        int t = 0; 
         startpos = new UnityEngine.Vector3(thrownBall.transform.position.x, distanceToFloor, thrownBall.transform.position.z);
         distance = (int)heightLow - zStartThrow;
         emptyRowCount = (distance / (int)ballWidth);
@@ -147,59 +145,12 @@ public class gameManager : MonoBehaviour
             Destroy(nextLevelButton);
         }
 
-        /*for (int a = 0; a < emptyRowCount; a++)
-        {
-            createdBalls.Add(new List<GameObject>());
-
-            for (int x  = 0; x < maxNumberOfBallsInRow; x++)
-            {
-                createdBalls[a].Add(null);
-            }
-        }*/
-
-        /*while (count < amountOnEachRow.Length)
-        {
-            createdBalls.Add(new List<GameObject>());
-
-            if (amountOnEachRow[count] > maxNumberOfBallsInRow || amountOnEachRow[count] < 0)
-            {
-                amountOnEachRow[count] = maxNumberOfBallsInRow;
-            }
-           
-            for (int a = 0; a < amountOnEachRow[count]; a++)
-            {
-                GameObject createdShift = Instantiate(hitBallTemplate);
-                createdShift.SetActive(true);
-                createdShift.transform.position = new UnityEngine.Vector3(widthLow + (ballWidth * a), distanceToFloor, heightLow + (ballHeight * count));
-                matOfBall = UnityEngine.Random.Range(0, matLen);
-                createdShift.GetComponent<MeshRenderer>().material = matsToGive[matOfBall];
-                createdShift.GetComponent<createdBallScript>().ballIDY = count;
-                createdShift.GetComponent<createdBallScript>().ballIDX = a;
-                createdShift.GetComponent<createdBallScript>().materialIndex = matOfBall;
-
-                if(a > 0)
-                {
-                    createdShift.GetComponent<createdBallScript>().toLeft = createdBalls[count + emptyRowCount][a - 1];
-                }
-
-                createdBalls[count + emptyRowCount].Add(createdShift);
-                locationIndices[count][a] = matOfBall;
-            }
-
-            for(int a = amountOnEachRow[count]; a < maxNumberOfBallsInRow; a++)
-            {
-                createdBalls[count + emptyRowCount].Add(null);
-            }
-
-            count++;
-        }*/
-
         backMostRowZ = heightLow + (ballHeight * count);
 
         float posZ = 0;
         int index = levelData.rowCount + emptyRowCount - 1;
 
-        posZ = (ballHeight * 2) + createdBalls[index][0].transform.position.z;
+        posZ = ballHeight + createdBalls[index][0].transform.position.z;
 
         backCube.transform.position = new UnityEngine.Vector3(backCube.transform.position.x, backCube.transform.position.y, posZ);
 
@@ -331,7 +282,7 @@ public class gameManager : MonoBehaviour
         createThrow(startpos);
     }
 
-    private bool generateForThrown(int xloc, int yloc, float xCoord, float zCoord, GameObject thrownBall, bool checkup)
+    public bool generateForThrown(int xloc, int yloc, float xCoord, float zCoord, GameObject thrownBall, bool checkup)
     {
         GameObject createdShift = Instantiate(hitBallTemplate);
         createdShift.transform.position = new UnityEngine.Vector3(xCoord, distanceToFloor, zCoord);
