@@ -31,5 +31,13 @@ public class lineScript : MonoBehaviour
             rend.endWidth = 0.5f;
             gameObject.SetActive(true);
         }
+        else
+        {
+            rend.SetPosition(0, startPos.position);
+            rend.SetPosition(1, startPos.position);
+            rend.startWidth = 0f;
+            rend.endWidth = 0f;
+            gameObject.SetActive(false);
+        }
     }
 }

@@ -55,6 +55,10 @@ public class throwScript : MonoBehaviour
             manager.line.GetComponent<lineScript>().getShot = true;
             manager.line.SetActive(true);
         }
+        else
+        {
+            manager.line.GetComponent<lineScript>().getShot = false;
+        }
 
         if (!isShot && Input.GetMouseButtonUp(0) && !manager.gameOver.gameObject.activeSelf && !EventSystem.current.IsPointerOverGameObject())
         {
@@ -69,6 +73,7 @@ public class throwScript : MonoBehaviour
     public void getLoc()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
         if (Physics.Raycast(ray, out RaycastHit raycasthit))
         {
             UnityEngine.Vector3 targetPosition = new UnityEngine.Vector3(raycasthit.point.x, transform.position.y, raycasthit.point.z);
@@ -102,20 +107,33 @@ public class throwScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetType() == typeof(SphereCollider) && !collision.collider.GetComponent<createdBallScript>().dragDown && !doOnce)
+        if (!doOnce && collision.collider.GetType() == typeof(SphereCollider) && !collision.collider.GetComponent<createdBallScript>().dragDown)
         {
             collidedWith = collision.gameObject;
             manager.placeBall(collidedWith, gameObject);
             doOnce = true;
         }
 
-        if (collision.collider.name.Equals("BackCube"))
+        if (!doOnce && collision.collider.name.Equals("BackCube"))
         {
             int pos = (int) transform.position.x / manager.maxNumberOfBallsInRow;
             int mid = manager.maxNumberOfBallsInRow / 2;
 
-            manager.generateForThrown(mid + pos, manager.totalRowCount.Length - 1, manager.widthLow + (manager.ballWidth * (pos + mid)), manager.heightLow + (manager.ballHeight * (manager.levelData.rowCount - 1)), gameObject, true);
+            if (manager.createdBalls[manager.levelData.rowCount - 1][mid + pos] == null)
+            {
+                manager.generateForThrown(mid + pos, manager.totalRowCount.Length - 1, manager.widthLow + (manager.ballWidth * (pos + mid)), manager.heightLow + (manager.ballHeight * (manager.levelData.rowCount - 1)), gameObject, true);
+            }
+            else if(manager.createdBalls[manager.levelData.rowCount - 1][mid + pos - 1] == null)
+            {
+               manager.generateForThrown(mid + pos - 1, manager.totalRowCount.Length - 1, manager.widthLow + (manager.ballWidth * (pos + mid)), manager.heightLow + (manager.ballHeight * (manager.levelData.rowCount - 1)), gameObject, true);
+            }
+            else if(manager.createdBalls[manager.levelData.rowCount - 1][mid + pos + 1] == null)
+            {
+                manager.generateForThrown(mid + pos + 1, manager.totalRowCount.Length - 1, manager.widthLow + (manager.ballWidth * (pos + mid)), manager.heightLow + (manager.ballHeight * (manager.levelData.rowCount - 1)), gameObject, true);
+            }
+
             manager.createThrow(manager.startpos);
+            doOnce = true;
             Destroy(gameObject);
         }
     }
